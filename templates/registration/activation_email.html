@@ -1,0 +1,20 @@
+<meta charset="utf-8">
+<span style="display:block;margin: 0 2px;padding: 1em;border: 3px solid #2980B9;background-color: #f8f8f8;border-radius: 6px;font-size: .95em;color: #444;">
+
+<b>感谢您注册 {{ SITE_LONG_NAME }}!</b><br/><br/>
+请在 24 小时内激活您的 {{ SITE_NAME }} 账号。<br/>你可以直接回复以下验证码至该邮箱:
+
+<pre style="margin-left:1em">
+{{ activation_key }}
+</pre>
+或者直接点击以下按钮完成账号激活：
+<p align="center">
+<a href="http://{{ site.domain }}/accounts/activate/{{ activation_key }}/" style="cursor: pointer;display:block;text-align: center;padding: 4px 2px 5px;color: white;border: 1px solid #666;border-radius: 1px;background: #2980b9;background: linear-gradient(180deg, #00aee0, #2980b9);text-decoration: none;line-height:2em;font-size:1emm;width:12em;">Activate</a>
+</p>
+
+{% if SITE_ADMIN_EMAIL %}
+    如有疑问，请与系统管理员联系： <a href="mailto:{{ SITE_ADMIN_EMAIL }}">{{ SITE_ADMIN_EMAIL }}</a>
+{% else %}
+    我们稍后见！
+{% endif %}
+</span>

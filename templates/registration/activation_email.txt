@@ -1,0 +1,8 @@
+请在 {{ expiration_days }} 天内激活您的 {{ SITE_LONG_NAME }} 账号。
+
+直接点击此链接进行激活：
+    http://{{ site.domain }}/accounts/activate/{{ activation_key }}/
+
+或回复以下验证码进行激活：
+
+{{ activation_key }}
