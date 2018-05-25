@@ -1,5 +1,13 @@
 {% extends "base.html" %}
 
+{% block media %}
+    <style>
+        #id_reason {
+            width: 100%;
+        }
+    </style>
+{% endblock %}
+
 {% block js_media %}
     <script type="text/javascript">
         $(function () {
@@ -16,7 +24,8 @@
     <form action="" method="post" class="form-area">
         {% csrf_token %}
         <p><label for="{{ form.reason.id_for_label }}"><b>{{ _('Your reason for joining:') }}</b></label></p>
-        <p>{{ form.reason }}</p>
-        <button type="submit">{{ _('Request') }}</button>
+        {{ form.reason }}
+        <button style="float: right;" type="submit">{{ _('Request') }}</button>
+        <div style="clear:both;"></div>
     </form>
 {% endblock %}

@@ -4,7 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied, ImproperlyConfigured
 from django.core.urlresolvers import reverse
 from django.db.models import F, Prefetch
-from django.http import Http404, HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
+from django.http import Http404, HttpResponse, HttpResponseRedirect, HttpResponseBadRequest, JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -253,7 +253,7 @@ class SubmissionsListBase(DiggPaginatorMixin, TitleMixin, ListView):
         self.selected_statuses = set(request.GET.getlist('status'))
 
         if 'results' in request.GET:
-            return render(request, 'problem/statistics-table.html', {'results': self.get_result_table()})
+            return JsonResponse(self.get_result_table(), safe=False)
 
         return super(SubmissionsListBase, self).get(request, *args, **kwargs)
 

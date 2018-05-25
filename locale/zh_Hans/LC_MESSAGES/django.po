@@ -2848,7 +2848,7 @@ msgstr "您的更新请求成功已被成功接收。我们已经发送了激活
 #: .\templates\organization\requests\pending.html:41
 #: .\templates\ticket\edit-notes.html:4
 msgid "Update"
-msgstr "升级"
+msgstr "更新"
 
 #: .\templates\organization\home.html:8
 msgid "Leave organization"

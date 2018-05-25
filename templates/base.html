@@ -52,7 +52,7 @@
         {% if PYGMENT_THEME %}
             <link rel="stylesheet" href="{{ static(PYGMENT_THEME) }}">
         {% endif %}{% if INLINE_FONTAWESOME %}
-        <link rel="stylesheet" href="{{ static('libs/fontawesome/font-awesome.css') }}">{% endif %}
+        <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">{% endif %}
         <link rel="stylesheet" type="text/css" href="{{ static('libs/featherlight/featherlight.min.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ static('libs/clipboard/tooltip.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ static('libs/select2/select2.css') }}">
@@ -92,53 +92,57 @@
     {% endcompress %}
     {% block js_media %}{% endblock %}
     {% if request.in_contest %}
-        <script>$(function () {
-            count_down($("#contest-time-remaining"));
+        <script>
+            $(function () {
+                count_down($("#contest-time-remaining"));
 
-            var selected = null,
-                x_pos = 0, y_pos = 0,
-                x_elem = 0, y_elem = 0;
+                var selected = null,
+                    x_pos = 0, y_pos = 0,
+                    x_elem = 0, y_elem = 0;
 
-            $('#contest-info').mousedown(function () {
-                selected = $(this);
-                x_elem = x_pos - selected.offset().left;
-                y_elem = y_pos - (selected.offset().top - $(window).scrollTop());
-                return false;
-            });
-
-            if (localStorage.getItem("contest_timer_pos")) {
-                data = localStorage.getItem("contest_timer_pos").split(":");
-                $("#contest-info").css({
-                    left: data[0],
-                    top: data[1]
+                $('#contest-info').mousedown(function (e) {
+                    selected = $(this);
+                    x_pos = e.screenX;
+                    y_pos = e.screenY;
+                    x_elem = x_pos - selected.offset().left;
+                    y_elem = y_pos - (selected.offset().top - $(window).scrollTop());
+                    return false;
                 });
-            }
 
-            $("#contest-info").show();
-
-            $(document).mousemove(function (e) {
-                x_pos = e.screenX;
-                y_pos = e.screenY;
-                x_pos = Math.max(Math.min(x_pos, window.innerWidth), 0);
-                y_pos = Math.max(Math.min(y_pos, window.innerHeight), 0);
-
-                if (selected !== null) {
-                    left_px = (x_pos - x_elem) + 'px';
-                    top_px = (y_pos - y_elem) + 'px';
-
-                    localStorage.setItem("contest_timer_pos", left_px + ":" + top_px);
-
-                    selected.css({
-                        left: left_px,
-                        top: top_px
+                if (localStorage.getItem("contest_timer_pos")) {
+                    data = localStorage.getItem("contest_timer_pos").split(":");
+                    $("#contest-info").css({
+                        left: data[0],
+                        top: data[1]
                     });
                 }
-            });
 
-            $(document).mouseup(function () {
-                selected = null;
-            })
-        });
+                $("#contest-info").show();
+
+                $(document).mousemove(function (e) {
+                    if (selected !== null) {
+                        x_pos = e.screenX - x_elem;
+                        y_pos = e.screenY - y_elem;
+                        // filter
+                        x_pos = Math.max(Math.min(x_pos, window.innerWidth - selected.outerWidth(true)), 0);
+                        y_pos = Math.max(Math.min(y_pos, window.innerHeight - selected.outerHeight(true)), 0);
+
+                        left_px = x_pos + 'px';
+                        top_px = y_pos + 'px';
+
+                        localStorage.setItem("contest_timer_pos", left_px + ":" + top_px);
+
+                        selected.css({
+                            left: left_px,
+                            top: top_px
+                        });
+                    }
+                });
+
+                $(document).mouseup(function () {
+                    selected = null;
+                })
+            });
         </script>
     {% endif %}
 
@@ -188,11 +192,12 @@
                     <a href="{{ node.path }}" class="nav-{{ node.key }}{% if node.key in nav_tab %} active{% endif %}">
                         {{ user_trans(node.label) }}
                         {% if not node.is_leaf_node %}
-                            <div href="javascript:void(0)" class="nav-expand">></div>
+                            <a href="javascript:void(0)" class="nav-expand">></a>
                         {% endif %}
                     </a>
                     {% with children=node.get_children() %}
-                        {% if children %}<ul>{{ loop(children) }}</ul>{% endif %}
+                        {% if children %}
+                            <ul>{{ loop(children) }}</ul>{% endif %}
                     {% endwith %}
                 </li>
             {% endfor %}
@@ -233,8 +238,9 @@
             {% else %}
                 <span class="anon">
                     <a href="{{ url('auth_login') }}?next={{ LOGIN_RETURN_PATH|urlencode }}">
-                        <b>{{ _('Login') }}</b>
-                    </a>&nbsp;|&nbsp;<a href="{{ url('registration_register') }}">{{ _('Register') }}</a>
+                        <i class="fa fa-sign-in"></i> {{ _('Login') }}
+                    </a><a href="{{ url('registration_register') }}"><i
+                        class="fa fa-registered"></i> {{ _('Register') }}</a>
                 </span>
             {% endif %}
         </span>
@@ -243,18 +249,19 @@
 </nav>
 {% if request.in_contest %}
     <div id="contest-info">
-        <a href="{{ url('contest_view', request.participation.contest.key) }}" style="vertical-align: middle">
-            {{ request.participation.contest.name }} -
-            {% if request.participation.spectate %}
-                {{ _('spectating') }}
-            {% elif request.participation.end_time %}
-                <div id="contest-time-remaining" data-secs="{{ request.participation.time_remaining|seconds }}">
-                    {{ request.participation.time_remaining|timedelta("localized") }}
-                </div>
-            {% else %}
-                {{ _('virtual') }}
-            {% endif %}
+        <a href="{{ url('contest_view', request.participation.contest.key) }}" style="vertical-align: middle;">
+            <i class="fa fa-play" aria-hidden="true"></i>
+            {{ request.participation.contest.name }}
         </a>
+        {% if request.participation.spectate %}
+            {{ _('spectating') }}
+        {% elif request.participation.end_time %}
+            <div id="contest-time-remaining" data-secs="{{ request.participation.time_remaining|seconds }}">
+                {{ request.participation.time_remaining|timedelta("localized") }}
+            </div>
+        {% else %}
+            {{ _('virtual') }}
+        {% endif %}
     </div>
 {% endif %}
 <div id="page-container">
@@ -264,7 +271,7 @@
     <br>
     <main id="content">
         {% block title_row %}
-            <h2 style="color:#393630; display:inline">
+            <h2 class style="color:#393630; display:inline">
                 {% block content_title %}
                     {% if content_title %}{{ content_title }}{% else %}{{ title }}{% endif %}
                 {% endblock %}
@@ -285,7 +292,6 @@
 
     <footer>
         <span id="footer-content">
-            <br>
             <a style="color: #808080" href="https://cs.hbu.edu.cn"><b>河北大学网络空间安全与计算机学院</b></a> |
             <a style="color: #808080" href="https://dmoj.ca">proudly powered by <b>DMOJ</b></a> |
             {% if i18n_config.footer %}
@@ -294,7 +300,7 @@
             <form action="{{ url('set_language') }}" method="post" style="display: inline">
                 {% csrf_token %}
             <input name="next" type="hidden" value="{{ request.get_full_path() }}">
-            <select name="language" onchange="form.submit()" style="height: 1.5em">
+            <select name="language" onchange="form.submit()" style="height: 1.5em" title="Language">
                 {% for language in language_info_list(LANGUAGES) %}
                     <option value="{{ language.code }}" {% if language.code == LANGUAGE_CODE %}selected{% endif %}>
                         {{ language.name_local }} ({{ language.code }})

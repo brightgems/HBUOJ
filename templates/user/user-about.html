@@ -41,14 +41,6 @@
             <div id="rating-chart">
                 <canvas></canvas>
             </div>
-            <div id="rating-tooltip">
-                <div class="contest"></div>
-                <div class="date"></div>
-                <div class="rate-group">
-                    <span class="rate-box"><span></span></span>
-                    <span class="rating"></span>, #<span class="rank"></span>
-                </div>
-            </div>
         {% endif %}
     </div>
 {% endblock %}
@@ -59,8 +51,7 @@
     {% endif %}
 
     {% if ratings %}
-        <script type="text/javascript" src="{{ static('libs/chart.js/Chart.Core.js') }}"></script>
-        <script type="text/javascript" src="{{ static('libs/chart.js/Chart.Scatter.js') }}"></script>
+        <script src="//cdn.bootcss.com/Chart.js/2.7.2/Chart.min.js"></script>
         <script type="text/javascript">
             var rating_history = {{rating_data}};
             var data_index = {};
@@ -75,79 +66,61 @@
                 var $canvas = $('#rating-chart').find('canvas');
                 var ctx = $canvas.get(0).getContext('2d');
 
-                var getItem = function (elements) {
-                    return rating_history[data_index[elements[0].arg.toString() + ',' + elements[0].value.toString()]];
-                };
-
-                Chart.types.Scatter.extend({
-                    name: 'RatingScatter',
-                    showTooltip: function (elements) {
-                        var $tooltip = $('#rating-tooltip');
-
-                        this.draw();
-                        if (elements.length > 0) {
-                            var item = getItem(elements);
-                            var offset = elements[0].tooltipPosition();
-
-                            $tooltip.find('.contest').text(item.label);
-                            $tooltip.find('.date').text(item.date);
-                            $tooltip.find('.rate-box').attr('class', 'rate-box ' + item.class)
-                                .find('span').css('height', item.height);
-                            $tooltip.find('.rating').text(item.rating).attr('class', 'rating ' + item.class);
-                            $tooltip.find('.rank').text(item.ranking);
-
-                            $tooltip.removeClass('above below');
-                            $tooltip.addClass(offset.y < $tooltip.height() ? 'below' : 'above');
-
-                            var position = $canvas.offset();
-                            var container = $('#page-container').offset();
-                            $tooltip.css({
-                                left: position.left - container.left + offset.x + $tooltip.width() / 2,
-                                top: position.top - container.top + offset.y - $tooltip.height() - 13,
-                                fontFamily: this.options.tooltipFontFamily,
-                                fontSize: this.options.tooltipFontSize,
-                                fontStyle: this.options.tooltipFontStyle
-                            }).show();
-                        } else
-                            $tooltip.hide();
-
-                        return this;
-                    }
-                });
-
-                window.rating_chart = new Chart(ctx).RatingScatter([
-                    {
-                        label: 'rating',
-                        strokeColor: '#A31515',
-                        fillColor: '#A31515',
-                        data: rating_history
-                    }
-                ], {
-                    bezierCurve: false,
-                    showTooltips: true,
-                    scaleShowHorizontalLines: true,
-                    scaleShowLabels: true,
-                    scaleType: 'date',
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    pointDotRadius: 6,
-                    pointHitDetectionRadius: 6
-                });
-
-                $canvas.click(function (evt) {
-                    var elements = window.rating_chart.getPointsAtEvent(evt);
-                    if (elements.length > 0) {
-                        var item = getItem(elements);
-                        window.location.href = item.link;
-                    }
-                });
-
-                $canvas.mousemove(function (evt) {
-                    var elements = window.rating_chart.getPointsAtEvent(evt);
-                    if (elements.length > 0) {
-                        $canvas.css('cursor', 'pointer');
-                    } else {
-                        $canvas.css('cursor', '');
+                window.rating_chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        datasets: [{
+                            label: 'Ranking',
+                            backgroundColor: window.chartColors.blue,
+                            borderColor: window.chartColors.blue,
+                            fill: false,
+                            data: rating_history,
+                            tension: 0.1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        legend: false,
+                        tooltips: {
+                            mode: 'index',
+                            callbacks: {
+                                // Use the footer callback to display the sum of the items showing in the tooltip
+                                footer: function (tooltipItems, data) {
+                                    var label;
+                                    tooltipItems.forEach(function (tooltipItem) {
+                                        label = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].label;
+                                    });
+                                    return label;
+                                }
+                            },
+                            footerFontStyle: 'normal'
+                        },
+                        hover: {
+                            mode: 'index',
+                            intersect: true
+                        },
+                        scales: {
+                            xAxes: [{
+                                type: 'time',
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: '日期'
+                                },
+                                ticks: {
+                                    major: {
+                                        fontStyle: 'bold'
+                                    }
+                                }
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: '段位'
+                                }
+                            }]
+                        }
                     }
                 });
             });

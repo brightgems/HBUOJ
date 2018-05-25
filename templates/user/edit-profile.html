@@ -40,17 +40,8 @@
             overflow: hidden;
         }
 
-        #edit-form {
-            border: unset;
-            background: unset;
-            max-width: 700px;
-        }
-
-        #center-float {
-            position: relative;
-            margin: 0 auto auto -28.5em;
-            left: 50%;
-            width: 700px;
+        #id_about_wmd_button_bar {
+            overflow-x: auto;
         }
     </style>
 {% endblock %}
@@ -76,27 +67,26 @@
 {% endblock %}
 
 {% block body %}
-    <div id="center-float">
-        <form id="edit-form" action="" method="post" class="form-area">
-            {% if form.errors %}
-                <div class="alert alert-danger alert-dismissable">
-                    <a href="#" class="close">x</a>
-                    {{ form.non_field_errors() }}
-                </div>
-            {% endif %}
-
-            {% csrf_token %}
-
-            <div style="padding-top:0.5em">
-                <label class="inline-header grayed">{{ _('Display name') }}:</label>
-                <span class="fullwidth">{{ form.name }}</span>
+    <form id="edit-form" action="" method="post" class="form-area">
+        {% if form.errors %}
+            <div class="alert alert-danger alert-dismissable">
+                <a href="#" class="close">x</a>
+                {{ form.non_field_errors() }}
             </div>
+        {% endif %}
 
-            <div style="padding-top:1em" class="block-header">{{ _('Self-description') }}:</div>
-            {{ form.about }}
-            <hr>
+        {% csrf_token %}
 
-            <table border="0" style="padding-top:0.7em">
+        <div style="padding-top:0.5em">
+            <label class="inline-header grayed">{{ _('Display name') }}:</label>
+            <span class="fullwidth">{{ form.name }}</span>
+        </div>
+
+        <div style="padding-top:1em" class="block-header">{{ _('Self-description') }}:</div>
+        {{ form.about }}
+        <hr>
+        <div style="overflow-x: auto">
+            <table border="0" style="padding-top:0.7em; min-width: 680px;">
                 <tr>
                     <td style="vertical-align:top;">
                         <table style="padding-right:0.8em">
@@ -150,20 +140,20 @@
                         </table>
                     </td>
                     <td>
-                        <div style="padding-bottom:0.4em;margin-top:-2em" class="block-header">
+                        <div style="padding-bottom:0.4em;" class="block-header">
                             {{ _('Affiliated organizations') }}:
                         </div>
                         {{ form.organizations }}
                     </td>
                 </tr>
             </table>
+        </div>
+        <hr>
+        <div class="block-header">{{ _('User-script') }}:</div>
+        {{ form.user_script }}
+        <hr>
 
-            <hr>
-            <div class="block-header">{{ _('User-script') }}:</div>
-            {{ form.user_script }}
-            <hr>
-
-            <input type="submit" style="float:right" value="{{ _('Update profile') }}">
-        </form>
-    </div>
+        <input class="button-primary" type="submit" style="float:right" value="{{ _('Update profile') }}">
+        <div style="clear: both"></div>
+    </form>
 {% endblock %}

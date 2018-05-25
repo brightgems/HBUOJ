@@ -20,41 +20,19 @@
             color: darkred;
         }
 
-        .container {
-            width: 100%;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: row-reverse;
-            max-width: 1000px;
-        }
-
-        .ticket-sidebar {
-            flex: 1;
-            padding: 10px 0 0 10px;
-            max-width: 200px;
-        }
-
         .ticket-info {
             position: sticky;
             top: 60px;
         }
 
-        .ticket-messages {
-            flex: 1;
-        }
-
         .info-box {
             margin: 5px 0 10px;
-            border: 1px #999 solid;
-            border-radius: 5px;
         }
 
         .info-title {
             padding: 2px 5px;
             font-weight: 600;
-            border-bottom: 1px #999 solid;
             background: #eee;
-            border-radius: 5px 5px 0 0;
         }
 
         .info-data {
@@ -64,30 +42,6 @@
         .info-empty {
             color: #999;
             font-style: italic;
-        }
-
-        .close-ticket {
-            display: block;
-            width: 100%;
-            background: linear-gradient(to bottom, #4bad00 0%, #278811 100%);
-            border-color: #24710e;
-            font-weight: 600;
-        }
-
-        .close-ticket:hover {
-            background: #24710e;
-        }
-
-        .open-ticket {
-            display: block;
-            width: 100%;
-            background: linear-gradient(to bottom, #ff130f, #b03d17);
-            border-color: #853011;
-            font-weight: 600;
-        }
-
-        .open-ticket:hover {
-            background: #853011;
         }
 
         a.edit-notes {
@@ -102,63 +56,12 @@
             margin-bottom: 0;
         }
 
-        .message {
-            display: flex;
-            margin-top: -40px;
-            padding-top: 55px;
+        #id_notes {
+            width: 100%;
         }
 
-        .message .info {
-            width: 130px;
-        }
-
-        .message .username {
-            text-align: center;
-        }
-
-        .message .gravatar {
-            width: 80px;
-            display: block;
-            margin: 0 auto;
-        }
-
-        .message .message-date, .message .message-time {
-            display: inline-block;
-        }
-
-        .message .detail {
-            border: 1px #999 solid;
-            border-radius: 5px;
-            flex: 1;
-        }
-
-        .message .header {
-            background: #eee;
-            color: #777;
-            border-bottom: 1px solid #999;
-            border-radius: 5px 5px 0 0;
-            padding: 2px 7px;
-            text-align: right;
-        }
-
-        .message .content {
-            padding: 7px;
-        }
-
-        .message .content :first-child {
-            margin-top: 0;
-        }
-
-        .message .content :last-child {
-            margin-bottom: 0;
-        }
-
-        .new-message .detail {
-            padding: 8px 10px;
-        }
-
-        .new-message .submit, #edit-notes .submit {
-            margin: 10px 0 0 auto;
+        .submit {
+            float: right;
         }
     </style>
 {% endblock %}
@@ -177,12 +80,12 @@
                     $status.removeClass('fa-check-circle-o').addClass('fa-exclamation-circle');
                 else
                     $status.removeClass('fa-exclamation-circle').addClass('fa-check-circle-o');
-                $('.close-ticket').toggle(open);
-                $('.open-ticket').toggle(!open);
+                $('#close-ticket').toggle(open);
+                $('#open-ticket').toggle(!open);
             }
 
-            $('.close-ticket, .open-ticket').click(function () {
-                var open = $(this).attr('data-open') == '1';
+            $('#close-ticket, #open-ticket').click(function () {
+                var open = $(this).attr('data-open') === '1';
                 $.ajax({
                     url: $(this).attr('data-ajax'), type: 'POST',
                     success: function () {
@@ -197,10 +100,11 @@
             $('.edit-notes').featherlight({
                 afterOpen: function () {
                     var $form = $('#edit-notes');
+                    var that = $;
                     $form.find('.submit').click(function () {
-                        $.post($form.attr('action'), $form.serialize()).done(function (data) {
+                        $.post($('.edit-notes').attr('data-featherlight'), $form.serialize()).done(function (data) {
                             $('#ticket-notes').find('.info-empty').toggle(!data).end().find('.info-real').html(data);
-                            $.featherlight.current().close();
+                            that.featherlight.current().close();
                         });
                         return false;
                     });
@@ -229,13 +133,13 @@
             function is_highest_ref() {
                 console.log(localStorage[page_ref_key], page_ref);
                 if (page_ref_key in localStorage)
-                    return +localStorage[page_ref_key] == page_ref;
+                    return +localStorage[page_ref_key] === page_ref;
                 return true;
             }
 
             $(window).on('storage', function (e) {
                 e = e.originalEvent;
-                if (e.key == page_close_key && e.newValue !== null)
+                if (e.key === page_close_key && e.newValue !== null)
                     if (page_ref != null && page_ref > +e.newValue)
                         --page_ref;
             });
@@ -287,96 +191,99 @@
     <div class="status">
         <i class="fa {% if ticket.is_open %}fa-exclamation-circle{% else %}fa-check-circle-o{% endif %}"></i>
     </div>
-    <div class="title">{{ ticket.title }}</div><small>#{{ ticket.id }}</small>
+    <div class="title">{{ ticket.title }}</div>
+    <small>#{{ ticket.id }}</small>
 {% endblock %}
 
 {% block body %}
-    <div class="container">
-        <aside class="ticket-sidebar">
-            <div class="ticket-info">
-                <div class="info-box">
-                    <div class="info-title">{{ _('Associated object') }}</div>
-                    <div class="info-data">
-                        <a href="{{ ticket.linked_item.get_absolute_url() }}">{{ ticket.linked_item }}</a>
-                    </div>
-                </div>
-                <div class="info-box">
-                    <div class="info-title">{{ _('Assignees') }}</div>
-                    <div class="info-data">
-                        {% if assignees %}
-                            {{ link_users(assignees) }}
-                        {% else %}
-                            <div class="info-empty">{{ _('No one is assigned.') }}</div>
-                        {% endif %}
-                    </div>
-                </div>
-
-                <button data-ajax="{{ url('ticket_close', ticket.id) }}" data-open="0" class="close-ticket"
-                        {% if not ticket.is_open %}style="display: none"{% endif %}>{{ _('Close ticket') }}</button>
-                <button data-ajax="{{ url('ticket_open', ticket.id) }}" data-open="1" class="open-ticket"
-                        {% if ticket.is_open %}style="display: none"{% endif %}>{{ _('Reopen ticket') }}</button>
-
-                {% if perms.judge.change_ticket or request.user.profile in assignees %}
-                    <div class="info-box">
-                        <div class="info-title">{{ _('Assignee notes') }}
-                            <a href="#" data-featherlight="{{ url('ticket_notes', ticket.id) }}" class="edit-notes">
-                                <i class="fa fa-pencil"></i>
-                            </a>
-                        </div>
-                        <div id="ticket-notes" class="info-data">
-                            <div{% if ticket.notes %} style="display: none"{% endif %} class="info-empty">
-                                {{ _('Nothing here.') }}
+    <div id="common-content">
+        <div id="content-right">
+            <div class="info-float">
+                <div class="sidebox">
+                    <div class="sidebox-content">
+                        <div class="ticket-info">
+                            <div class="info-box">
+                                <div class="info-title">{{ _('Associated object') }}</div>
+                                <div class="info-data">
+                                    <a href="{{ ticket.linked_item.get_absolute_url() }}">{{ ticket.linked_item }}</a>
+                                </div>
                             </div>
-                            <div class="info-real">{{ ticket.notes|linebreaks }}</div>
+                            <div class="info-box">
+                                <div class="info-title">{{ _('Assignees') }}</div>
+                                <div class="info-data">
+                                    {% if assignees %}
+                                        {{ link_users(assignees) }}
+                                    {% else %}
+                                        <div class="info-empty">{{ _('No one is assigned.') }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <button id="close-ticket" class="button button-primary button-action full"
+                                    data-ajax="{{ url('ticket_close', ticket.id) }}" data-open="0"
+                                    {% if not ticket.is_open %}style="display: none"{% endif %}>{{ _('Close ticket') }}</button>
+                            <button id="open-ticket" class="button button-primary button-caution full"
+                                    data-ajax="{{ url('ticket_open', ticket.id) }}" data-open="1"
+                                    {% if ticket.is_open %}style="display: none"{% endif %}>{{ _('Reopen ticket') }}</button>
+
+                            {% if perms.judge.change_ticket or request.user.profile in assignees %}
+                                <div class="info-box">
+                                    <div class="info-title">{{ _('Assignee notes') }}
+                                        <a href="#" data-featherlight="{{ url('ticket_notes', ticket.id) }}"
+                                           class="edit-notes">
+                                            <i class="fa fa-pencil"></i>
+                                        </a>
+                                    </div>
+                                    <div id="ticket-notes" class="info-data">
+                                        <div{% if ticket.notes %} style="display: none"{% endif %} class="info-empty">
+                                            {{ _('Nothing here.') }}
+                                        </div>
+                                        <div class="info-real">{{ ticket.notes|linebreaks }}</div>
+                                    </div>
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
-                {% endif %}
+                </div>
             </div>
-        </aside>
+        </div>
 
-        <div class="ticket-messages">
-            <main class="messages">
+        <div id="content-left">
+
+            <ul class="comments top-level-comments new-comments">
                 {% for message in messages %}
-                    <section id="message-{{ message.id }}" class="message">
-                        <div class="info">
-                            <a href="{{ url('user_page', message.user.user.username) }}" class="user">
-                                <img src="{{ gravatar(message.user, 135) }}" class="gravatar">
-                                <div class="username {{ message.user.css_class }}">{{ message.user.user.username }}</div>
-                            </a>
-                        </div>
-                        <div class="detail">
-                            <div class="header">
-                                <div class="relative-time"></div>
-                                <div class="message-date">{{ message.time|date('DATE_FORMAT') }}</div>
-                                <div class="message-time">{{ message.time|time('TIME_FORMAT') }}</div>
+                    <li id="message-{{ message.id }}" class="comment">
+                        <div class="comment-display">
+                            <div class="info">
+                                <a href="{{ url('user_page', message.user.user.username) }}" class="user">
+                                    <img src="{{ gravatar(message.user, 135) }}" class="gravatar">
+                                </a>
                             </div>
-                            <div class="content content-description">
-                                {{ message.body|markdown('ticket', MATH_ENGINE)|reference|str|safe }}
+                            <div class="detail">
+                                <div class="header">
+                                    <span class="username {{ message.user.css_class }}">{{ message.user.user.username }}</span>
+                                    <span class="comment-spacer"></span>
+                                    <span class="message-date">{{ message.time|date('DATE_FORMAT') }}</span>
+                                    <span class="message-time">{{ message.time|time('TIME_FORMAT') }}</span>
+                                </div>
+                                <div class="content content-description">
+                                    {{ message.body|markdown('ticket', MATH_ENGINE)|reference|str|safe }}
+                                </div>
                             </div>
                         </div>
-                    </section>
+                    </li>
                 {% endfor %}
-            </main>
-            <hr>
-            <section class="message new-message">
-                <div class="info">
-                    <a href="{{ url('user_page') }}" class="user">
-                        <img src="{{ gravatar(request.user) }}" class="gravatar">
-                        <div class="username {{ request.user.profile.css_class }}">{{ request.user.username }}</div>
-                    </a>
+            </ul>
+            <form action="" method="post" class="form-area">
+                {% csrf_token %}
+                <div class="form-errors">
+                    {{ form.non_field_errors() }}
+                    {{ form.body.errors }}
                 </div>
-                <div class="detail">
-                    <form action="" method="post">
-                        {% csrf_token %}
-                        <div class="form-errors">
-                            {{ form.non_field_errors() }}
-                            {{ form.body.errors }}
-                        </div>
-                        <div class="body-block">{{ form.body }}</div>
-                        <button type="submit" class="submit">{{ _('Post') }}</button>
-                    </form>
-                </div>
-            </section>
+                <div class="body-block">{{ form.body }}</div>
+                <button style="float: right;" type="submit" class="button button-primary">{{ _('Post') }}</button>
+                <div style="clear:both;"></div>
+            </form>
         </div>
     </div>
 {% endblock %}

@@ -16,20 +16,24 @@
     {% else %}
         {% if submission.error %}
             <h3>{{ _('Compilation Warnings') }}</h3>
+            <hr class="half-hr">
+            <br>
             <pre>{{ submission.error|safe }}</pre>
-            <hr class="half-hr"><br>
         {% endif %}
         {% if is_pretest %}
             <h3>{{ _('Pretest Execution Results') }}</h3>
         {% else %}
             <h3>{{ _('Execution Results') }}</h3>
         {% endif %}
+        <hr class="half-hr">
         <br>
         {% set test_case_id = counter() %}
         {% for batch in batches %}
             {% if batch.id %}
                 <b>{{ _('Batch ') }}#{{ test_case_id() }}</b>
-                ({{ _('%(points)s/%(total)s points', points=batch.points|floatformat(0), total=batch.total|floatformat(0)) }})
+                (
+                {{ _('%(points)s/%(total)s points', points=batch.points|floatformat(0), total=batch.total|floatformat(0)) }}
+                )
                 <br>
                 <div class="batch-cases">
             {% endif %}

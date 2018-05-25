@@ -1,5 +1,7 @@
 <form id="edit-notes" action="" method="post">
+    <h4>Assignee note:</h4>
     {% csrf_token %}
     {{ form.notes }}
     <button type="submit" class="submit">{{ _('Update') }}</button>
+    <div style="clear: both"></div>
 </form>

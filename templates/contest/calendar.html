@@ -3,20 +3,20 @@
 
 {% block title_row %}
     {% set tab = 'calendar' %}
-    {% set title = _('Contests in %(month)s', month=month|date(_("F Y"))) %}
+    {% set title = _(month|date(_("F Y"))) %}
     {% include "contest/contest-list-tabs.html" %}
 {% endblock %}
 
 {% block body %}
     <table id="contest-calendar">
         <tr>
-            <th>{{ _('Sunday') }}</th>
             <th>{{ _('Monday') }}</th>
             <th>{{ _('Tuesday') }}</th>
             <th>{{ _('Wednesday') }}</th>
             <th>{{ _('Thursday') }}</th>
             <th>{{ _('Friday') }}</th>
             <th>{{ _('Saturday') }}</th>
+            <th>{{ _('Sunday') }}</th>
         </tr>
         {% for week in calendar %}
             <tr>{% for day in week %}

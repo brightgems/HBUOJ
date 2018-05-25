@@ -3,7 +3,6 @@ import json
 from datetime import datetime
 from operator import itemgetter
 
-import django
 from django.conf import settings
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.decorators import login_required
@@ -16,7 +15,6 @@ from django.db.models import Max, Count, Min
 from django.http import HttpResponseRedirect, Http404
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
-from django.template import RequestContext, Context
 from django.utils import timezone
 from django.utils.formats import date_format
 from django.utils.functional import cached_property

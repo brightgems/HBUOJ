@@ -15,8 +15,7 @@ except ImportError:
     from django.forms.util import flatatt
 from django.utils.safestring import mark_safe
 
-
-ACE_URL = getattr(settings, 'ACE_URL', '//cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/ext-split.js')
+ACE_URL = getattr(settings, 'ACE_URL', '//cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/')
 
 
 class AceWidget(forms.Textarea):
@@ -33,6 +32,7 @@ class AceWidget(forms.Textarea):
     @property
     def media(self):
         js = [urljoin(ACE_URL, 'ace.js')] if self.ace_media else []
+        js.append(urljoin(ACE_URL, 'ext-language_tools.js'))
         js.append('django_ace/widget.js')
         css = {
             'screen': ['django_ace/widget.css'],

@@ -9,28 +9,6 @@
             color: darkred;
         }
 
-        @media (min-width: 500px) {
-            #container {
-                display: flex;
-                flex-direction: row-reverse;
-            }
-
-            #container > main {
-                flex: 1;
-            }
-
-            #container > aside {
-                flex: 1;
-                max-width: 200px;
-                margin-left: 1em;
-            }
-
-            #container > aside > div {
-                position: sticky;
-                top: 60px;
-            }
-        }
-
         .select2-selection__arrow {
             display: none;
         }
@@ -94,7 +72,7 @@
 
             function main_list_notify(id) {
                 key = 'ticket:open:' + id;
-                return !(key in localStorage) || localStorage[key] == '0';
+                return !(key in localStorage) || localStorage[key] === '0';
             }
 
             var $tbody = $('#ticket-list').find('tbody');
@@ -147,7 +125,7 @@
                     "{{ EVENT_DAEMON_LOCATION }}", "{{ EVENT_DAEMON_POLL_LOCATION }}",
                     ['tickets'], last_msg, function (message) {
                         console.log(message);
-                        if (filter_own_id != null && message.user != filter_own_id &&
+                        if (filter_own_id != null && message.user !== filter_own_id &&
                             !~message.assignees.indexOf(filter_own_id))
                             return;
                         if (filter_user_ids.length && !~filter_user_ids.indexOf(message.user))
@@ -197,52 +175,60 @@
 {% endblock %}
 
 {% block body %}
-    <div id="container">
-        <aside>
-            <div>
-                <div id="notification-box">
-                    <input id="notification" type="checkbox">
-                    <label for="notification">{{ _('Use desktop notification') }}</label>
+    <div id="common-content">
+        <div id="content-right">
+
+            <div class="info-float">
+                <div class="sidebox">
+                    <h3>筛选 <i class="fa fa-search"></i></h3>
+                    <div class="sidebox-content">
+                        <div>
+                            <div id="notification-box">
+                                <input id="notification" type="checkbox">
+                                <label for="notification">{{ _('Use desktop notification') }}</label>
+                            </div>
+
+                            <form id="filter-form" name="form" action="" method="get">
+                                <div id="own-box" class="filter-check">
+                                    <input id="own" type="checkbox" name="own"{% if filter_status %} checked{% endif %}
+                                           value="1">
+                                    <label for="own">{{ _('Show my tickets only') }}</label>
+                                </div>
+
+                                <div id="user-box" class="filter-form-group">
+                                    <label for="filter-user">{{ _('Filing user') }}</label>
+                                    <select id="filter-user" style="width: 100%" multiple="multiple" name="user">
+                                        {% for username in filter_status.user %}
+                                            <option value="{{ username }}" selected>{{ username }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <div id="assignee-box" class="filter-form-group">
+                                    <label for="filter-user">{{ _('Assignee') }}</label>
+                                    <select id="filter-assignee" style="width: 100%" multiple name="assignee" title="Assignee">
+                                        {% for username in filter_status.assignee %}
+                                            <option value="{{ username }}" selected>{{ username }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-submit-group">
+                                    <button type="submit" class="button button-primary">{{ _('Go') }}</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
-
-                <form id="filter-form" name="form" action="" method="get">
-                    <div id="own-box" class="filter-check">
-                        <input id="own" type="checkbox" name="own"{% if filter_status %} checked{% endif %} value="1">
-                        <label for="own">{{ _('Show my tickets only') }}</label>
-                    </div>
-
-                    <div id="user-box" class="filter-select2">
-                        <label for="filter-user">{{ _('Filing user') }}</label>
-                        <select id="filter-user" style="width: 100%" multiple="multiple" name="user">
-                            {% for username in filter_status.user %}
-                                <option value="{{ username }}" selected>{{ username }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <div id="assignee-box" class="filter-select2">
-                        <label for="filter-user">{{ _('Assignee') }}</label>
-                        <select id="filter-assignee" style="width: 100%" multiple name="assignee">
-                            {% for username in filter_status.assignee %}
-                                <option value="{{ username }}" selected>{{ username }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <button type="submit" style="margin-left: auto" class="submit">{{ _('Go') }}</button>
-                </form>
             </div>
-        </aside>
-
-        <main>
+        </div>
+        <div id="content-left">
             {% if page_obj.num_pages > 1 %}
                 <div style="margin-bottom:6px; margin-top:3px">{% include "list-pages.html" %}</div>
             {% endif %}
             <table id="ticket-list" class="table">
                 <thead>
                 <tr>
-                    <th></th>
-                    <th>{{ _('ID') }}</th>
+                    <th><i class="fa fa-check"></i></th>
                     <th>{{ _('Title') }}</th>
                     <th>{{ _('User') }}</th>
                     <th>{{ _('Assignees') }}</th>
@@ -257,6 +243,6 @@
             {% if page_obj.num_pages > 1 %}
                 <div style="margin-top:10px">{% include "list-pages.html" %}</div>
             {% endif %}
-        </main>
+        </div>
     </div>
 {% endblock %}

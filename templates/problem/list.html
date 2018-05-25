@@ -64,7 +64,7 @@
 
                 // This is incredibly nasty to do but it's needed because otherwise the select2 steals the focus
                 $search.keypress(function (e) {
-                    if (e.keyCode == 13)
+                    if (e.keyCode === 13)
                         $('#go').click();
                 });
 
@@ -96,6 +96,15 @@
                     });
                     info_float.width(container.width());
                 }
+
+                $(window).resize(function () {
+                    $("#category").select2({
+                        width: 'resolve'
+                    });
+                    $("#types").select2({
+                        width: 'resolve'
+                    });
+                });
 
                 var intFormatter = {
                     to: function (value) {
@@ -163,7 +172,7 @@
 
 {% block title_row %}
     {% set tab = 'list' %}
-    {% set title = 'Problems' %}
+    {% set title = _('Problems') %}
     {% include "problem/problem-list-tabs.html" %}
 {% endblock %}
 

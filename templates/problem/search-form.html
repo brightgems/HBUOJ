@@ -44,7 +44,7 @@
             {% if show_types %}
                 <div class="filter-form-group">
                     <label for="type"><i>{{ _('Problem types') }}</i></label>
-                    <select id="types" name="type" multiple="multiple">
+                    <select id="types" name="type" multiple="multiple" title="Types">
                         {% for type in problem_types %}
                             <option value="{{ type.id }}"{% if type.id in selected_types %} selected{% endif %}>
                                 {{ type.full_name }}
@@ -60,8 +60,8 @@
             <input id="point-start" type="hidden" name="point_start" disabled="disabled">
             <input id="point-end" type="hidden" name="point_end" disabled="disabled">
             <div class="form-submit-group">
-                <a id="go" class="button">{{ _('Go') }}</a>
-                <a id="random" class="button">{{ _('Random') }}</a>
+                <a id="go" class="button button-primary button-width-small">{{ _('Go') }}</a>
+                <a id="random" class="button button-primary button-width-small">{{ _('Random') }}</a>
             </div>
         </form>
     </div>

@@ -2,7 +2,7 @@
 if (!Array.prototype.indexOf) {
     Array.prototype.indexOf = function (obj) {
         for (var i = 0; i < this.length; i++) {
-            if (this[i] == obj) {
+            if (this[i] === obj) {
                 return i;
             }
         }
@@ -116,7 +116,7 @@ window.fix_div = function (div, height) {
     };
     ($(window).scrollTop() - div_offset > -height) ? fix() : moving();
     $(window).scroll(function () {
-        if (($(window).scrollTop() - div_offset > -height) == is_moving)
+        if (($(window).scrollTop() - div_offset > -height) === is_moving)
             is_moving ? fix() : moving();
     });
 };
@@ -253,7 +253,7 @@ window.notification_template = {
 window.notification_timeout = 5000;
 
 window.notify = function (type, title, data, timeout) {
-    if (localStorage[type + '_notification'] != 'true') return;
+    if (localStorage[type + '_notification'] !== 'true') return;
     var template = window[type + '_notification_template'] || window.notification_template;
     var data = (typeof data !== 'undefined' ? $.extend({}, template, data) : template);
     var object = new Notification(title, data);
@@ -272,7 +272,7 @@ window.register_notify = function (type, options) {
 
     function status_change() {
         if ('change' in options)
-            options.change(localStorage[key] == 'true');
+            options.change(localStorage[key] === 'true');
     }
 
     var key = type + '_notification';
@@ -300,14 +300,14 @@ window.register_notify = function (type, options) {
                     localStorage[key] = 'false';
                     status_change();
                 }
-            }).prop('checked', localStorage[key] == 'true');
+            }).prop('checked', localStorage[key] === 'true');
         }
 
         $(window).on('storage', function (e) {
             e = e.originalEvent;
             if (e.key === key) {
                 if ('$checkbox' in options)
-                    options.$checkbox.prop('checked', e.newValue == 'true');
+                    options.$checkbox.prop('checked', e.newValue === 'true');
                 status_change();
             }
         });
@@ -349,3 +349,13 @@ $(function () {
         handler();
     });
 });
+
+window.chartColors = {
+    red: 'rgb(255, 99, 132)',
+    orange: 'rgb(255, 159, 64)',
+    yellow: 'rgb(255, 205, 86)',
+    green: 'rgb(75, 192, 192)',
+    blue: 'rgb(54, 162, 235)',
+    purple: 'rgb(153, 102, 255)',
+    grey: 'rgb(201, 203, 207)'
+};

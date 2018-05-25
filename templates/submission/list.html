@@ -24,7 +24,7 @@
             {% endif %}
         </script>
     {% endif %}
-
+    <script src="//cdn.bootcss.com/Chart.js/2.7.2/Chart.min.js"></script>
     {% compress js %}
         <script type="text/javascript" src="{{ static('event.js') }}"></script>
         {% if request.user.is_authenticated and perms.judge.rejudge_submission %}
@@ -44,6 +44,63 @@
             </script>
         {% endif %}
         <script type="text/javascript">
+            var stats_outdated = false;
+            var config = {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: [47, 32, 43, 34, 54, 23, 12],
+                        backgroundColor: [
+                            window.chartColors.green,
+                            window.chartColors.orange,
+                            window.chartColors.yellow,
+                            window.chartColors.red,
+                            window.chartColors.blue,
+                            window.chartColors.purple,
+                            window.chartColors.grey
+                        ],
+                        label: '提交统计'
+                    }],
+                    labels: [
+                        'AC',
+                        'WA',
+                        'CE',
+                        'TLE',
+                        'MLE',
+                        'OHT'
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    legend: false,
+                    title: {
+                        display: false,
+                        text: '提交统计'
+                    },
+                    animation: {
+                        animateScale: true,
+                        animateRotate: true
+                    }
+                }
+            };
+            var update_stats = function () {
+                $.ajax({
+                    url: '?results'
+                }).done(function (data) {
+                    config.data.datasets[0].data = data.map(function (cur) {
+                        return cur.count;
+                    });
+                    config.data.labels = data.map(function (cur) {
+                        return cur.label;
+                    });
+                    window.statistics_chart.update();
+                }).fail(function () {
+                    console.log('Failed to update statistics table!' + id);
+                }).always(function () {
+                    stats_outdated = false;
+                });
+            };
+
             $(function () {
                 var info_float = $('.info-float');
                 var container = $('#content-right');
@@ -61,6 +118,22 @@
                     .css({'visibility': 'visible'});
                 $('#language').select2({multiple: 1, placeholder: '{{ _('Filter by language...') }}'})
                     .css({'visibility': 'visible'});
+
+                $(window).resize(function () {
+                    $("#language").select2({
+                        width: 'resolve'
+                    });
+                    $("#status").select2({
+                        width: 'resolve'
+                    });
+                });
+
+                // 提交统计图形初始化
+                var $canvas = $('#statistics-chart').find('canvas');
+                var ctx = $canvas.get(0).getContext('2d');
+
+                window.statistics_chart = new Chart(ctx, config);
+                update_stats();
             });
 
             function load_dynamic_update(last_msg) {
@@ -77,10 +150,10 @@
 
                 var update_submission = function (message, force) {
                     if (language_filter.length && 'language' in message &&
-                        language_filter.indexOf(message.language) == -1)
+                        language_filter.indexOf(message.language) === -1)
                         return;
                     if (status_filter.length && 'status' in message &&
-                        status_filter.indexOf(message.status) == -1)
+                        status_filter.indexOf(message.status) === -1)
                         return;
 
                     var id = message.id;
@@ -120,20 +193,6 @@
                     }
                 };
 
-                var stats_outdated = false;
-
-                function update_stats() {
-                    $.ajax({
-                        url: '?results'
-                    }).done(function (data) {
-                        statistics.html(data);
-                    }).fail(function () {
-                        console.log('Failed to update statistics table!' + id);
-                    }).always(function () {
-                        stats_outdated = false;
-                    });
-                }
-
                 $(window).on('dmoj:window-visible', function () {
                     if (stats_outdated)
                         update_stats();
@@ -143,16 +202,16 @@
                 var receiver = new EventReceiver(
                     "{{ EVENT_DAEMON_LOCATION }}", "{{ EVENT_DAEMON_POLL_LOCATION }}",
                     ['submissions'], last_msg, function (message) {
-                        if (current_contest && message.contest != current_contest)
+                        if (current_contest && message.contest !== current_contest)
                             return;
-                        if (dynamic_user_id && message.user != dynamic_user_id ||
-                            dynamic_problem_id && message.problem != dynamic_problem_id)
+                        if (dynamic_user_id && message.user !== dynamic_user_id ||
+                            dynamic_problem_id && message.problem !== dynamic_problem_id)
                             return;
-                        if (message.type == 'update-submission') {
-                            if (message.state == 'test-case' && $body.hasClass('window-hidden'))
+                        if (message.type === 'update-submission') {
+                            if (message.state === 'test-case' && $body.hasClass('window-hidden'))
                                 return;
                             update_submission(message);
-                        } else if (message.type == 'done-submission') {
+                        } else if (message.type === 'done-submission') {
                             update_submission(message, true);
 
                             if (!statistics.length) return;
@@ -163,7 +222,7 @@
                     }
                 );
                 receiver.onwsclose = function (event) {
-                    if (event.code == 1001) {
+                    if (event.code === 1001) {
                         console.log('Navigated away');
                         return;
                     }
@@ -237,14 +296,19 @@
                                 </select>
                             </div>
                             <div class="form-submit-group">
-                                <a id="go" onclick="form.submit()" class="button">{{ _('Go') }}</a>
+                                <a id="go" onclick="form.submit()" class="button button-primary">{{ _('Go') }}</a>
                             </div>
                         </form>
                     </div>
                 </div>
 
                 <div class="sidebox">
-                    <div id="statistics-table">{% include "problem/statistics-table.html" %}</div>
+                    <h3>{{ _('Statistics') }} <i class="fa fa-pie-chart"></i></h3>
+                    <div class="sidebox-content sidebox-table">
+                        <div id="statistics-chart">
+                            <canvas></canvas>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -285,5 +349,5 @@
 {% endblock %}
 
 {% block bodyend %}
-{# Don't load MathJax from common-content! #}
+    {# Don't load MathJax from common-content! #}
 {% endblock %}

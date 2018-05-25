@@ -1,5 +1,6 @@
 {% extends "base.html" %}
-
+{% block title_row %}{% endblock %}
+{% block title_ruler %}{% endblock %}
 {% block js_media %}
     {% include "comments/media-js.html" %}
 {% endblock %}
@@ -8,39 +9,45 @@
     {% include "comments/media-css.html" %}
 {% endblock %}
 
-{% block header %}
-    {% if perms.judge.change_blogpost %}
-        <div class="title-line-action">[<a href="{{ url('admin:judge_blogpost_change', post.id) }}">{{ _('Edit') }}</a>]
-        </div>
-    {% endif %}
-{% endblock %}
+{% block header %}{% endblock %}
 
 {% block body %}
     <div class="post-full">
-        <div class="time">
-            {% with authors=post.authors.all() %}
-                {% if authors %}
-                    <span class="post-authors">{{ link_users(authors) }}</span>
+        <div class="post-content">
+            <h2 class="title">
+                {% if content_title %}{{ content_title }}{% else %}{{ title }}{% endif %}
+
+                <span class="social">
+                    {{ post_to_gplus(request, post, '<i class="fa fa-google-plus-square"></i>') }}
+                    {{ post_to_facebook(request, post, '<i class="fa fa-facebook-official"></i>') }}
+                    {{ post_to_twitter(request, SITE_NAME + ':', post, '<i class="fa fa-twitter"></i>') }}
+                </span>
+            </h2>
+            <div class="time">
+                {% if perms.judge.change_blogpost %}
+                    <div class="title-line-action">[<a
+                            href="{{ url('admin:judge_blogpost_change', post.id) }}">{{ _('Edit') }}</a>]
+                    </div>
                 {% endif %}
-            {% endwith %}
-            <span class="post-time">
+                {% with authors=post.authors.all() %}
+                    {% if authors %}
+                        <span class="post-authors">{{ link_users(authors) }}</span>
+                    {% endif %}
+                {% endwith %}
+                <span class="post-time">
                 {% trans time=post.publish_on|date(_("N j, Y, g:i a")) %}
                     posted on {{ time }}
                 {% endtrans %}
             </span>
-        </div>
-        <div class="body content-description">
-            {% cache 86400 'post_content' post.id MATH_ENGINE %}
-                {{ post.content|markdown('blog', MATH_ENGINE)|reference|str|safe}}
-            {% endcache %}
+            </div>
+            <hr>
+            <div class="body content-description">
+                {% cache 86400 'post_content' post.id MATH_ENGINE %}
+                    {{ post.content|markdown('blog', MATH_ENGINE)|reference|str|safe }}
+                {% endcache %}
+            </div>
         </div>
     </div>
-    <hr>
-    <span class="social">
-        {{ post_to_gplus(request, post, '<i class="fa fa-google-plus-square"></i>') }}
-        {{ post_to_facebook(request, post, '<i class="fa fa-facebook-official"></i>') }}
-        {{ post_to_twitter(request, SITE_NAME + ':', post, '<i class="fa fa-twitter"></i>') }}
-    </span>
     {% include "comments/list.html" %}
 {% endblock %}
 

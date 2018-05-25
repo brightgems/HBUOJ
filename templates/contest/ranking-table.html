@@ -36,7 +36,7 @@
     {% endif %}
 {% endblock %}
 
-{% block before_point_head %}
+{% block after_point_head %}
     {% for problem in problems %}
         <th class="points header"><a href="{{ url('contest_ranked_submissions', contest.key, problem.problem.code) }}">
             {{- loop.index }}
@@ -45,7 +45,7 @@
     {% endfor %}
 {% endblock %}
 
-{% block before_point %}
+{% block point %}
     {% for problem in user.problems %}
         {% if problem %}
             <td class="{% if problem.is_pretested and contest.run_pretests_only %}pretest-{% endif %}{{ problem.state }}">
@@ -60,7 +60,7 @@
     {% endfor %}
 {% endblock %}
 
-{% block point %}
+{% block before_point %}
     <td class="user-points">
         {{- user.points|floatformat }}
         <div class="solving-time">{{ user.cumtime|timestampdelta('noday') }}</div>

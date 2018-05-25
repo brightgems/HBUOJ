@@ -3,6 +3,16 @@
     {% if i18n_config.home_page_top %}
         {{ render_django(i18n_config.home_page_top, request=request, user_count=user_count, problem_count=problem_count, submission_count=submission_count, language_count=language_count, perms=perms) }}
     {% endif %}
+
+    {# 主页开头 #}
+    <section class="hero container center text-center">
+        <div>
+            <img src="//oj.hbu.cn/static/icons/title.png" alt="HBU Logo">
+            <h2>河北大学程序自动评测姬</h2>
+            <h4>HeBei University Online Judger</h4>
+        </div>
+    </section>
+
 {% endblock %}
 {% block meta %}
     {% if i18n_config.meta_description %}
@@ -19,5 +29,7 @@
                 "query-input": "required name=search_term_string"
             }
         }
+
+
     </script>
 {% endblock %}

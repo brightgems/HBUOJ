@@ -20,3 +20,9 @@ pyyaml
 jinja2
 django_jinja
 llist
+pymysql
+django-redis
+mysqlclient
+django_select2
+django_anymail
+websocket-client

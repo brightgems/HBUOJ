@@ -1,135 +1,195 @@
 @import "vars";
 
 .comment-score {
-    font-weight: bold;
-    text-align: center;
+  font-weight: bold;
+  text-align: center;
 }
 
 a {
-    &.upvote-link, &.downvote-link {
-        color: black;
-    }
+  &.upvote-link, &.downvote-link {
+    color: black;
+  }
 
-    &.voted {
-        text-shadow: 0 0 4px black, 0 0 9px blue;
-    }
+  &.voted {
+    text-shadow: 0 0 4px black, 0 0 9px blue;
+  }
 }
 
 .comment-area {
-    margin-right: 30px;
+  // margin-right: 30px;
+}
 
-    h2 {
-        margin-bottom: 20px;
+.new-comments {
+  .comment-display {
+    display: flex;
+    margin-top: -0.25em !important;
+    padding-left: 1em;
+    padding-top: 0.5em !important;
+    /* border: 1px solid #ccc; */
+    background: white;
+    border-radius: 4px;
+  }
+  .comment-title {
+    font-weight: 600;
+    color: black;
+    padding-top: 0.8em;
+  }
+  .comment {
+    .detail {
+      margin: 0 15px 0;
+      width: 100%;
+
+      .header {
+        display: flex;
+        padding: 2px 0;
+        font-weight: normal;
+        color: #888;
+        text-align: right;
+
+        @media (max-width: 760px) {
+          :nth-child(2) {
+            display: none;
+          }
+        }
+      }
     }
+    :target > .comment-display {
+      border: 1px solid #2980b9;
+      border-left: 10px solid #2980b9;
+      padding-left: 5px;
+    }
+  }
+  .comment-edits {
+    padding-right: 0.75em;
+  }
+  .header i {
+    color: #888 !important;
+  }
+  .info {
+    display: flex;
+  }
+  .gravatar {
+    width: 75px;
+    max-width: 75px;
+    border-radius: 50%;
+  }
+  .vote {
+    margin-right: 1em;
+    height: 75px;
+    padding-top: 0.4em;
+  }
+  .top-level-comments {
+    margin-bottom: -3px;
+  }
+}
+
+.previous-revision, .next-revision {
+  color: #444;
 }
 
 .no-comments-message {
-    margin-top: -15px;
-    margin-left: 2.75em;
-}
-
-.comment-author {
-    font-weight: bold;
-    color: #333;
+  margin: 1em 0;
+  padding: 1em;
+  text-align: center;
+  background: white;
+  border-radius: $widget_border_radius;
 }
 
 .comment-header {
-    color: rgba(1, 1, 1, 1);
-    background: rgba(0, 0, 0, 0.1);
-    padding: 5px 10px 5px 5px;
-    margin-left: 30px;
-    border: 1px solid $border_gray;
-    border-radius: $widget_border_radius;
-    display: flex;
+  color: rgba(1, 1, 1, 1);
+  background: rgba(0, 0, 0, 0.1);
+  padding: 5px 10px 5px 5px;
+  margin-left: 30px;
+  border: 1px solid $border_gray;
+  border-radius: $widget_border_radius;
+  display: flex;
 }
 
 .comment-spacer {
-    flex: 1;
+  flex: 1;
 }
 
 .comment-edits:not(:empty) {
-    padding-right: 2px;
-    color: #444;
+  padding-right: 2px;
+  color: #444;
 }
 
 .comment-operation {
-    float: right;
+  float: right;
 
-    .fa {
-        color: #444;
-    }
+  .fa {
+    color: #444;
+  }
 
-    a + a {
-        padding-left: 2px;
-    }
+  a + a {
+    padding-left: 2px;
+  }
 }
 
 .comments.top-level-comments {
-    margin-right: -26px;
-}
-
-.comment-submit {
-    width: 100%;
+  padding-left: 0;
 }
 
 .comment-post-wrapper {
-    div {
-        padding-bottom: 2px;
-        padding-right: 10px;
-    }
 
-    input, textarea {
-        min-width: 100%;
-        max-width: 100%;
+  #id_body_wmd_button_bar {
+    overflow: auto;
+  }
 
-        // Hack for 4k on Chrome
-        font-size: $base_font_size;
-    }
+  input, textarea {
+    min-width: 100%;
+    max-width: 100%;
+
+    // Hack for 4k on Chrome
+    font-size: $base_font_size;
+  }
 }
 
 .comment-box {
-    border-radius: $widget_border_radius;
-    padding: 5px 10px 10px 15px;
-    border: 1px solid $border_gray;
-    background: rgba(0, 0, 0, 0.01);
+  border-radius: $widget_border_radius;
+  padding: 5px 10px 10px 15px;
+  border: 1px solid $border_gray;
+  background: rgba(0, 0, 0, 0.01);
 }
 
 .comment {
-    list-style: none none;
-    border-radius: $widget_border_radius;
-    margin: (-50px) -4px 10px -40px;
-    padding-top: 50px;
+  list-style: none none;
+  border-radius: $widget_border_radius;
+  margin-bottom: 10px;
+  // padding-top: 50px;
 
-    &:target > .comment-box {
-        border-left: 10px solid $highlight_blue;
-        padding-left: 5px;
-    }
+  &:target > .comment-box {
+    border-left: 10px solid $highlight_blue;
+    padding-left: 5px;
+  }
 
-    &:before {
-        display: block;
-        content: " ";
-        margin-top: -50px;
-        height: 50px;
-        visibility: hidden;
-    }
+  &:before {
+    display: block;
+    content: " ";
+    margin-top: -50px;
+    height: 50px;
+    visibility: hidden;
+  }
 }
 
 .comment-title {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 .comment-author {
-    margin-bottom: 1em;
+  margin-bottom: 1em;
 
-    img {
-        width: 1.25em;
-        height: 1.25em;
-        border-radius: 0.2em;
-        vertical-align: bottom;
-        margin-right: 0.3em;
-    }
+  img {
+    width: 1.25em;
+    height: 1.25em;
+    border-radius: 0.2em;
+    vertical-align: bottom;
+    margin-right: 0.3em;
+  }
 }
 
 .comment-body {
-    word-wrap: break-word;
+  word-wrap: break-word;
 }
+
+

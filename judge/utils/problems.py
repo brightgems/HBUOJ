@@ -1,3 +1,4 @@
+
 from collections import defaultdict
 from math import e
 
@@ -78,13 +79,13 @@ def get_result_table(*args, **kwargs):
         submissions = Submission.objects.filter(**kwargs) if kwargs is not None else Submission.objects
     raw = submissions.values('result').annotate(count=Count('result')).values_list('result', 'count')
     results = defaultdict(int, raw)
-    return [(_('Accepted'), 'AC', results['AC']),
-            (_('Wrong Answer'), 'WA', results['WA']),
-            (_('Compile Error'), 'CE', results['CE']),
-            (_('Time Limit Exceeded'), 'TLE', results['TLE']),
-            (_('Memory Limit Exceeded'), 'MLE', results['MLE']),
-            (_('Other'), 'OTH', results['RTE'] + results['IR'] + results['OLE'] + results['AB'] + results['IE']),
-            (_('Total'), 'TOT', sum(results.values()))]
+    return [{'label': _('Accepted'), 'style': 'AC', 'count': results['AC']},
+            {'label': _('Wrong Answer'), 'style': 'WA', 'count': results['WA']},
+            {'label': _('Compile Error'), 'style': 'CE', 'count': results['CE']},
+            {'label': _('Time Limit Exceeded'), 'style': 'TLE', 'count': results['TLE']},
+            {'label': _('Memory Limit Exceeded'), 'style': 'MLE', 'count': results['MLE']},
+            {'label': _('Other'), 'style': 'OTH',
+             'count': results['RTE'] + results['IR'] + results['OLE'] + results['AB'] + results['IE']}]
 
 
 def editable_problems(user, profile=None):

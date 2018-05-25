@@ -6,7 +6,7 @@
         window.django = {jQuery: $};
 
         function pluralidx(count) {
-            return (count == 1) ? 0 : 1;
+            return (count === 1) ? 0 : 1;
         }
 
         function gettext(msgid) {
@@ -24,17 +24,26 @@
                 });
             }
         }
+
+        $(function () {
+            $(window).resize(function () {
+                $("#id_admins").select2({
+                    width: 'resolve'
+                });
+            });
+        })
     </script>
 {% endblock %}
 
 {% block media %}
     {{ form.media.css }}
-    <link rel="stylesheet" href="{{ static('admin/css/widgets.css') }}" type="text/css">
-    <link rel="stylesheet" href="{{ static('admin/css/pagedown.css') }}" type="text/css">
-    <link rel="stylesheet" href="{{ static('problem_edit.css') }}" type="text/css">
     <style>
-        #id_about {
-            width: 500px;
+        #id_admins {
+            width: 100%;
+        }
+
+        #id_about_wmd_button_bar {
+            overflow-x: auto;
         }
     </style>
 {% endblock %}
@@ -42,7 +51,8 @@
 {% block body %}
     <form action="" method="post" class="form-area">
         {% csrf_token %}
-        <table border="0" style="text-align:left">{{ form.as_table() }}</table>
-        <button type="submit">{{ _('Update') }}</button>
+        {{ form }}
+        <button style="float: right;" type="submit">{{ _('Update') }}</button>
+        <div style="clear: both;"></div>
     </form>
 {% endblock %}

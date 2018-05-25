@@ -22,7 +22,7 @@
         // taken from Pro JavaScript techniques
         do {
             elem = elem.nextSibling;
-        } while (elem && elem.nodeType != 1);
+        } while (elem && elem.nodeType !== 1);
         return elem;
     }
 
@@ -31,7 +31,7 @@
         // taken from Pro JavaScript techniques
         do {
             elem = elem.previousSibling;
-        } while (elem && elem.nodeType != 1);
+        } while (elem && elem.nodeType !== 1);
         return elem;
     }
 
@@ -46,7 +46,7 @@
     }
 
     function minimizeMaximize(widget, main_block, editor) {
-        if (window.fullscreen == true) {
+        if (window.fullscreen === true) {
             main_block.className = 'django-ace-editor';
 
             widget.style.width = window.ace_widget.width + 'px';
@@ -71,6 +71,9 @@
     }
 
     function apply_widget(widget) {
+        // trigger extension
+        ace.require("ace/ext/language_tools");
+
         var div = widget.firstChild,
             textarea = next(widget),
             editor = ace.edit(div),
@@ -99,12 +102,19 @@
         if (theme) {
             editor.setTheme("ace/theme/" + theme);
         }
-        if (wordwrap == "true") {
+        if (wordwrap === "true") {
             editor.getSession().setUseWrapMode(true);
         }
 
         editor.getSession().on('change', function () {
             textarea.value = editor.getSession().getValue();
+        });
+
+        // enable autocompletion and snippets
+        editor.setOptions({
+            enableBasicAutocompletion: true,
+            enableSnippets: true,
+            enableLiveAutocompletion: true
         });
 
         editor.commands.addCommands([

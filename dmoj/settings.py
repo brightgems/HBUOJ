@@ -143,7 +143,6 @@ INSTALLED_APPS += (
 )
 
 MIDDLEWARE = (
-    'django.middleware.cache.UpdateCacheMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -158,7 +157,6 @@ MIDDLEWARE = (
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
     'judge.social_auth.SocialAuthExceptionMiddleware',
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
-    'django.middleware.cache.FetchFromCacheMiddleware',
 )
 
 IMPERSONATE_REQUIRE_SUPERUSER = True

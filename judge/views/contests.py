@@ -1,10 +1,10 @@
-from calendar import Calendar, SUNDAY
+from calendar import Calendar, MONDAY
 from collections import namedtuple, defaultdict
+from datetime import timedelta, date, datetime, time
 from functools import partial
 from itertools import chain
 from operator import attrgetter
 
-from datetime import timedelta, date, datetime, time
 from django import forms
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -12,7 +12,7 @@ from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist, ImproperlyConfigured
 from django.core.urlresolvers import reverse
 from django.db import connection, IntegrityError
-from django.db.models import Q, Min, Max, Count, Sum, Case, When, IntegerField
+from django.db.models import Q, Min, Max, Sum, Case, When, IntegerField
 from django.http import HttpResponseRedirect, HttpResponseBadRequest, Http404, HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
@@ -316,8 +316,8 @@ ContestDay = namedtuple('ContestDay', 'date weekday is_pad is_today starts ends 
 
 
 class ContestCalendar(TitleMixin, ContestListMixin, TemplateView):
-    firstweekday = SUNDAY
-    weekday_classes = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat']
+    firstweekday = MONDAY
+    weekday_classes = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
     template_name = 'contest/calendar.html'
     title = ugettext_lazy('Contests')
 

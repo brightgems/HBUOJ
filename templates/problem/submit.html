@@ -1,8 +1,97 @@
-{% extends "base.html" %}
+<html>
+<head>
+    <title>Debug</title>
 
-{% block js_media %}
-    <script type="text/javascript" src="{{ ACE_URL }}/ace.js"></script>
+    {% compress css %}
+        <link rel="stylesheet" href="{{ static('style.css') }}">
+        {% if PYGMENT_THEME %}
+            <link rel="stylesheet" href="{{ static(PYGMENT_THEME) }}">
+        {% endif %}{% if INLINE_FONTAWESOME %}
+        <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">{% endif %}
+        <link rel="stylesheet" type="text/css" href="{{ static('libs/featherlight/featherlight.min.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ static('libs/clipboard/tooltip.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ static('libs/select2/select2.css') }}">
+
+        {{ form.media.css }}
+        <style media="screen">
+            #submit-wrapper #problem-id, #submit-wrapper #editor, #submit-wrapper {
+                margin-top: 4px;
+            }
+
+            #language-select {
+                padding: 4px;
+                flex: 1
+            }
+
+            #id_language {
+                width: 100%;
+            }
+
+            #bottom-tooltip {
+                display: flex;
+            }
+
+            #result-version-info {
+                border-bottom: 1px solid rgb(148, 148, 148);
+                margin: 0 1em;
+                color: #757575;
+                font-weight: 600;
+                padding: 0.2em 0;
+                text-align: right;
+            }
+
+            .select2-results__message {
+                white-space: nowrap
+            }
+
+            .select2-dropdown--above {
+                display: flex;
+                flex-direction: column-reverse;
+            }
+
+            .select2-results__option {
+                color: #757575 !important;
+                background: white !important;
+            }
+
+            .select2-results__option--highlighted {
+                text-decoration: underline;
+            }
+
+            .select2-results__option[aria-selected=true] {
+                font-weight: bold;
+                color: black !important;
+            }
+
+            .select2-results__option {
+                padding: 4px 0;
+            }
+
+            .select2-results__options {
+                overflow-y: visible !important;
+            }
+
+            .select2-results__option {
+                break-inside: avoid-column;
+            }
+
+            .select2-results {
+                -webkit-columns: 10 7em;
+                -moz-columns: 10 7em;
+                columns: 10 7em;
+                padding-left: 1.5em;
+                padding-top: 0.5em;
+            }
+        </style>
+    {% endcompress %}
+
     {% compress js %}
+        {% if INLINE_JQUERY %}
+            <script src="{{ static('libs/jquery-1.11.2.min.js') }}"></script>
+        {% endif %}
+        <script src="{{ static('libs/select2/select2.js') }}"></script>
+
+        <script type="text/javascript" src="{{ ACE_URL }}/ace.js"></script>
         {{ form.media.js }}
         <script type="text/javascript">
             $(function () {
@@ -15,7 +104,7 @@
 
                 function update_language_template() {
                     var source = $('textarea#id_source');
-                    if (source.val() == window.previous_template.replace(/\r/g, '') || source.val() == '') {
+                    if (source.val() === window.previous_template.replace(/\r/g, '') || source.val() === '') {
                         var lang_id = $('#id_language').val();
                         var code = localStorage.getItem('submit:' + $('#id_language').val());
 
@@ -40,8 +129,7 @@
                 function makeDisplayData(data) {
                     var site_data = data.attr('data-info');
                     var judge_data = data.attr('data-judge-info');
-                    var display_data = site_data || judge_data;
-                    return display_data;
+                    return site_data || judge_data;
                 }
 
                 function formatSelection(state) {
@@ -106,152 +194,79 @@
                 });
 
                 $(window).resize(function () {
-                    $('#ace_source').height(Math.max($(window).height() - 353, 100));
+                    $('#ace_source').height($(window).height() - $('#bottom-tooltip').outerHeight() - $('.django-ace-toolbar').outerHeight());
+                    $('#id_language').select2({width: 'resolve'});
                 }).resize();
             });
         </script>
     {% endcompress %}
-{% endblock %}
+</head>
 
-{% block media %}
-    {% compress css %}
-        {{ form.media.css }}
-        <style media="screen">
-            #submit-wrapper {
-                margin-top: 0.7em;
-            }
-
-            #submit-wrapper #problem-id, #submit-wrapper #editor, #submit-wrapper #language {
-                margin-top: 4px;
-            }
-
-            #id_language {
-                width: 100%;
-            }
-
-            #result-version-info {
-                border-bottom: 1px solid rgb(148, 148, 148);
-                margin: 0px 1em;
-                color: #757575;
-                font-weight: 600;
-                padding: 0.2em 0;
-                text-align: right;
-            }
-
-            .select2-results__message {
-                white-space: nowrap
-            }
-
-            .select2-dropdown--above {
-                display: flex;
-                flex-direction: column-reverse;
-            }
-
-            .select2-results__option {
-                color: #757575 !important;
-                background: white !important;
-            }
-
-            .select2-results__option--highlighted {
-                text-decoration: underline;
-            }
-
-            .select2-results__option[aria-selected=true] {
-                font-weight: bold;
-                color: black !important;
-            }
-
-            .select2-results__option {
-                padding: 4px 0px;
-            }
-
-            .select2-results__options {
-                overflow-y: visible !important;
-            }
-
-            .select2-results__option {
-                break-inside: avoid-column;
-            }
-
-            .select2-results {
-                -webkit-columns: 10 7em;
-                -moz-columns: 10 7em;
-                columns: 10 7em;
-                padding-left: 1.5em;
-                padding-top: 0.5em;
-            }
-        </style>
-    {% endcompress %}
-{% endblock %}
-
-{% block body %}
-    <br>
-    {% if not no_judges %}
-        {% if default_lang not in form.fields.language.queryset %}
-            <div class="alert alert-warning alert-dismissable">
-                <a class="close">x</a>
-                {% trans trimmed default_language=default_lang.name %}
-                    <b>Warning!</b> Your default language, <b>{{ default_language }}</b>,
-                    is unavailable for this problem and has been deselected.
-                {% endtrans %}
-            </div>
-        {% endif %}
-
-        {% if request.in_contest and submission_limit %}
-            {% if submissions_left > 0 %}
-                <div class="alert alert-warning alert-dismissable">
-                    <a class="close">x</a>
-                    {% trans left=submissions_left %}
-                        You have {{ left }} submission left
-                        {% pluralize %}
-                        You have {{ left }} submissions left
-                    {% endtrans %}
-                </div>
-            {% else %}
-                <div class="alert alert-warning alert-dismissable">
-                    <a class="close">x</a>
-                    {{ _('You have 0 submissions left') }}
-                </div>
-            {% endif %}
-        {% endif %}
+<body>
+{% if not no_judges %}
+    {% if default_lang not in form.fields.language.queryset %}
+        <div class="alert alert-warning alert-dismissable">
+            <a class="close">x</a>
+            {% trans trimmed default_language=default_lang.name %}
+                <b>Warning!</b> Your default language, <b>{{ default_language }}</b>,
+                is unavailable for this problem and has been deselected.
+            {% endtrans %}
+        </div>
     {% endif %}
 
-    <form id="problem_submit" action="" method="post" class="form-area">
-        {% csrf_token %}
-        {{ form.non_field_errors() }}
-        <div id="submit-wrapper">
-            <div id="problem-id">
-                {{ form.problem.errors }}
-                {{ form.problem }}
+    {% if request.in_contest and submission_limit %}
+        {% if submissions_left > 0 %}
+            <div class="alert alert-warning alert-dismissable">
+                <a class="close">x</a>
+                {% trans left=submissions_left %}
+                    You have {{ left }} submission left
+                    {% pluralize %}
+                    You have {{ left }} submissions left
+                {% endtrans %}
             </div>
-            <div id="editor">
-                {{ form.source.errors }}
-                {{ form.source }}
-            </div>
-            {% if not no_judges %}
-                <div id="language">
-                    {{ form.language.errors }}
-                    <div id="language-select">
-                        <select id="id_language" name="language">
-                            {% for lang in form.fields.language.queryset %}
-                                <option value="{{ lang.id }}" data-id="{{ lang.id }}" data-name="{{ lang.name }}"
-                                        data-info="{{ lang.info }}" data-ace="{{ lang.ace }}"
-                                        data-judge-info="{{ runtime_versions(lang.runtime_versions()) }}"
-                                        {% if lang.id == default_lang.id %}selected{% endif %}>{{ lang.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-            {% endif %}
-        </div>
-
-        <hr>
-
-        {% if no_judges %}
-            <span style="color: red">{{ _('No judge is available for this problem.') }}</span>
         {% else %}
-            <input type="submit" value="{{ _('Submit!') }}" class="button"
-                   {% if request.in_contest and submission_limit and not submissions_left %}disabled{% endif %}>
+            <div class="alert alert-warning alert-dismissable">
+                <a class="close">x</a>
+                {{ _('You have 0 submissions left') }}
+            </div>
         {% endif %}
-    </form>
-{% endblock %}
+    {% endif %}
+{% endif %}
+
+<form id="problem_submit" action="" method="post" target="_parent">
+    {% csrf_token %}
+    {{ form.non_field_errors() }}
+    <div id="submit-wrapper">
+        <div id="problem-id">
+            {{ form.problem.errors }}
+            {{ form.problem }}
+        </div>
+        <div id="editor">
+            {{ form.source.errors }}
+            {{ form.source }}
+        </div>
+        {% if not no_judges %}
+            <div id="bottom-tooltip">
+                {{ form.language.errors }}
+                <div id="language-select">
+                    <select id="id_language" name="language" title="Language">
+                        {% for lang in form.fields.language.queryset %}
+                            <option value="{{ lang.id }}" data-id="{{ lang.id }}" data-name="{{ lang.name }}"
+                                    data-info="{{ lang.info }}" data-ace="{{ lang.ace }}"
+                                    data-judge-info="{{ runtime_versions(lang.runtime_versions()) }}"
+                                    {% if lang.id == default_lang.id %}selected{% endif %}>{{ lang.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% if no_judges %}
+                    <span style="color: red">{{ _('No judge is available for this problem.') }}</span>
+                {% else %}
+                    <input type="submit" value="{{ _('Submit!') }}" class="button"
+                           {% if request.in_contest and submission_limit and not submissions_left %}disabled{% endif %}>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</form>
+</body>
+</html>
