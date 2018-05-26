@@ -1,7 +1,7 @@
 {% extends "common-content.html" %}
 
 {% block media %}
-    <link rel="stylesheet" href="{{ static('libs/nouislider.min.css') }}">
+    <link rel="stylesheet" href="{{ static('libs/noUiSlider/nouislider.min.css') }}">
     <noscript>
         <style>#category, #types {
             visibility: visible;
@@ -41,7 +41,7 @@
         window.point_values = {{point_values|json|safe}};
     </script>
     {% compress js %}
-        <script src="{{ static('libs/nouislider.min.js') }}" type="text/javascript"></script>
+        <script src="{{ static('libs/noUiSlider/nouislider.min.js') }}" type="text/javascript"></script>
         <script>
             $(function () {
                 var $form = $('form#filter-form');

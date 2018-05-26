@@ -51,11 +51,13 @@
         <link rel="stylesheet" href="{{ static('style.css') }}">
         {% if PYGMENT_THEME %}
             <link rel="stylesheet" href="{{ static(PYGMENT_THEME) }}">
-        {% endif %}{% if INLINE_FONTAWESOME %}
-        <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">{% endif %}
+        {% endif %}
+        {% if INLINE_FONTAWESOME %}
+            <link href="{{ static('libs/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet">
+        {% endif %}
         <link rel="stylesheet" type="text/css" href="{{ static('libs/featherlight/featherlight.min.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ static('libs/clipboard/tooltip.css') }}">
-        <link rel="stylesheet" type="text/css" href="{{ static('libs/select2/select2.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ static('libs/select2/css/select2.css') }}">
     {% endcompress %}
     <link rel="canonical"
           href="{{ DMOJ_SCHEME }}://{{ DMOJ_CANONICAL|default(site.domain) }}{{ request.get_full_path() }}">
@@ -80,7 +82,7 @@
         <script src="{{ static('libs/jquery-taphold.js') }}"></script>
         <script src="{{ static('libs/jquery.unveil.js') }}"></script>
         <script src="{{ static('libs/moment.js') }}"></script>
-        <script src="{{ static('libs/select2/select2.js') }}"></script>
+        <script src="{{ static('libs/select2/js/select2.js') }}"></script>
         {% include "extra_js.html" %}
         <script src="{{ static('common.js') }}"></script>
         <script>
