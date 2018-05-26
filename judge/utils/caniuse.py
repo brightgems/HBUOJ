@@ -4,15 +4,16 @@ from contextlib import closing
 from ua_parser import user_agent_parser
 
 # Download data.json
-with closing(open('judge/utils/data.json', 'w+')) as cache_file:
-    try:
-        with closing(urllib2.urlopen('https://raw.githubusercontent.com/Fyrd/caniuse/master/data.json', timeout=3)) as f:
-            cache_file.write(f.read())
-            cache_file.seek(0)
-    except Exception as e:
-        pass
-    finally:
-            _SUPPORT_DATA = json.load(cache_file)['data']
+try:
+    with closing(urllib2.urlopen('https://raw.githubusercontent.com/Fyrd/caniuse/master/data.json', timeout=3)) as f:
+        cache_file = open('judge/utils/data.json', 'w+')
+        cache_file.write(f.read())
+        cache_file.close()
+except Exception as e:
+    pass
+finally:
+    with closing(open('judge/utils/data.json', 'r')) as f:
+        _SUPPORT_DATA = json.load(f)['data']
 
 
 SUPPORT = 'y'
