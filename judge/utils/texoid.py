@@ -29,7 +29,7 @@ class TexoidRenderer(object):
         try:
             request = urllib2.urlopen(settings.TEXOID_URL, urlencode({
                 'q': formula
-            }))
+            }), timeout=3)
         except urllib2.HTTPError as e:
             with closing(e):
                 if e.code == 400:

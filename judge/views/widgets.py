@@ -45,7 +45,7 @@ class DetectTimezone(View):
             raise ImproperlyConfigured()
         with closing(urllib2.urlopen('http://api.askgeo.com/v1/%s/%s/query.json?databases=TimeZone&points=%f,%f' %
                                              (settings.ASKGEO_ACCOUNT_ID, settings.ASKGEO_ACCOUNT_API_KEY, lat,
-                                              long))) as f:
+                                              long), timeout=3)) as f:
             data = json.load(f)
             try:
                 return HttpResponse(data['data'][0]['TimeZone']['TimeZoneId'], content_type='text/plain')
@@ -56,7 +56,7 @@ class DetectTimezone(View):
         if not hasattr(settings, 'GEONAMES_USERNAME'):
             raise ImproperlyConfigured()
         with closing(urllib2.urlopen('http://api.geonames.org/timezoneJSON?lat=%f&lng=%f&username=%s' %
-                                             (lat, long, settings.GEONAMES_USERNAME))) as f:
+                                             (lat, long, settings.GEONAMES_USERNAME), timeout=3)) as f:
             data = json.load(f)
             try:
                 return HttpResponse(data['timezoneId'], content_type='text/plain')

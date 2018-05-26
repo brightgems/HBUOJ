@@ -66,7 +66,7 @@ class MathoidMathParser(object):
             request = urllib2.urlopen(self.mathoid_url, urlencode({
                 'q': reescape.sub(lambda m: '\\' + m.group(0), formula).encode('utf-8'),
                 'type': 'tex' if formula.startswith('\displaystyle') else 'inline-tex'
-            }))
+            }), timeout=3)
         except urllib2.HTTPError as e:
             if e.code == 400:
                 logger.error('Mathoid failed to render: %s\n%s', formula, e.read())
