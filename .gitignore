@@ -11,3 +11,4 @@ resources/ranks.css
 resources/table.css
 sass_processed
 node_modules
+.DS_Store
