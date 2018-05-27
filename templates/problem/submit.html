@@ -5,19 +5,18 @@
     {% if not INLINE_FONTAWESOME %}
         <link rel="stylesheet" href="{{ FONTAWESOME_CSS }}">
     {% endif %}
+    
+    {% if PYGMENT_THEME %}
+        <link rel="stylesheet" href="{{ static(PYGMENT_THEME) }}">
+    {% endif %} 
+    {% if INLINE_FONTAWESOME %}
+        <link href="{{ static('libs/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet">
+    {% endif %}
+    <link rel="stylesheet" type="text/css" href="{{ static('libs/select2/css/select2.css') }}">
+    <link rel="stylesheet" href="{{ static('style.css') }}"> 
+    {{ form.media.css }}
+
     {% compress css %}
-
-        {% if PYGMENT_THEME %}
-            <link rel="stylesheet" href="{{ static(PYGMENT_THEME) }}">
-        {% endif %}
-        {% if INLINE_FONTAWESOME %}
-            <link href="{{ static('libs/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet">
-        {% endif %}
-        <link rel="stylesheet" type="text/css" href="{{ static('libs/select2/css/select2.css') }}">
-        <link rel="stylesheet" href="{{ static('style.css') }}">
-
-        {{ form.media.css }}
-        
         <style media="screen">
             #submit-wrapper #problem-id, #submit-wrapper #editor, #submit-wrapper {
                 margin-top: 4px;
@@ -90,14 +89,14 @@
         </style>
     {% endcompress %}
 
-    {% compress js %}
-        {% if INLINE_JQUERY %}
-            <script src="{{ static('libs/jquery-1.11.2.min.js') }}"></script>
-        {% endif %}
-        <script src="{{ static('libs/select2/js/select2.js') }}"></script>
+    <script type="text/javascript" src="{{ ACE_URL }}/ace.js"></script>
+    {% if INLINE_JQUERY %}
+        <script src="{{ static('libs/jquery-1.11.2.min.js') }}"></script>
+    {% endif %}
+    <script src="{{ static('libs/select2/js/select2.js') }}"></script>
+    {{ form.media.js }}
 
-        <script type="text/javascript" src="{{ ACE_URL }}/ace.js"></script>
-        {{ form.media.js }}
+    {% compress js %}
         <script type="text/javascript">
             $(function () {
                 function format(state) {
