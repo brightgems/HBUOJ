@@ -1,17 +1,17 @@
 <html>
 <head>
-    <title>Debug</title>
+    <title>Web IDE</title>
+
+    {% if PYGMENT_THEME %}
+        <link rel="stylesheet" href="{{ static(PYGMENT_THEME) }}">
+    {% endif %}
+    {% if INLINE_FONTAWESOME %}
+        <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    {% endif %}
+    <link rel="stylesheet" type="text/css" href="{{ static('libs/select2/css/select2.css') }}">
 
     {% compress css %}
         <link rel="stylesheet" href="{{ static('style.css') }}">
-        {% if PYGMENT_THEME %}
-            <link rel="stylesheet" href="{{ static(PYGMENT_THEME) }}">
-        {% endif %}
-        {% if INLINE_FONTAWESOME %}
-            <link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-        {% endif %}
-        <link rel="stylesheet" type="text/css" href="{{ static('libs/select2/css/select2.css') }}">
-
         {{ form.media.css }}
         <style media="screen">
             #submit-wrapper #problem-id, #submit-wrapper #editor, #submit-wrapper {
