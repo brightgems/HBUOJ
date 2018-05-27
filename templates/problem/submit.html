@@ -90,13 +90,14 @@
         </style>
     {% endcompress %}
 
+    <script type="text/javascript" src="{{ ACE_URL }}/ace.js"></script>
+    
     {% compress js %}
         {% if INLINE_JQUERY %}
             <script src="{{ static('libs/jquery-1.11.2.min.js') }}"></script>
         {% endif %}
         <script src="{{ static('libs/select2/js/select2.js') }}"></script>
 
-        <script type="text/javascript" src="{{ ACE_URL }}/ace.js"></script>
         {{ form.media.js }}
         <script type="text/javascript">
             $(function () {
