@@ -14,6 +14,7 @@ from judge.models import Language, Profile, Problem, ProblemGroup, ProblemType, 
     MiscConfig, Judge, NavigationBar, Contest, ContestParticipation, Organization, BlogPost, \
     License, OrganizationRequest, ContestTag, Ticket
 
+admin.site.site_header = 'HBU Online Judge'
 admin.site.register(Language, LanguageAdmin)
 admin.site.register(Comment, CommentAdmin)
 admin.site.register(Profile, ProfileAdmin)
@@ -32,3 +33,4 @@ admin.site.register(BlogPost, BlogPostAdmin)
 admin.site.register(License, LicenseAdmin)
 admin.site.register(OrganizationRequest, OrganizationRequestAdmin)
 admin.site.register(Ticket, TicketAdmin)
+

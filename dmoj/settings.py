@@ -27,7 +27,7 @@ SECRET_KEY = '5*9f5q57mqmlz2#f$x1h76&jxy#yortjl1v+l*6hd18$d*yx#0'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 SITE_ID = 1
 SITE_NAME = 'HBUOJ'
@@ -36,90 +36,11 @@ SITE_LONG_NAME = 'Hebei University Online Judge'
 PYGMENT_THEME = 'pygment-github.css'
 
 # Application definition
-
-INSTALLED_APPS = ()
-
-try:
-    import wpadmin
-except ImportError:
-    pass
-else:
-    del wpadmin
-    INSTALLED_APPS += ('wpadmin',)
-
-    WPADMIN = {
-        'admin': {
-            'title': 'HBU Admin',
-            'menu': {
-                'top': 'wpadmin.menu.menus.BasicTopMenu',
-                'left': 'wpadmin.menu.custom.CustomModelLeftMenuWithDashboard',
-            },
-            'custom_menu': [
-                {
-                    'model': 'judge.Problem',
-                    'icon': 'fa-question-circle',
-                    'children': [
-                        'judge.ProblemGroup',
-                        'judge.ProblemType',
-                    ],
-                },
-                {
-                    'model': 'judge.Submission',
-                    'icon': 'fa-check-square-o',
-                    'children': [
-                        'judge.Language',
-                        'judge.Judge',
-                    ],
-                },
-                {
-                    'model': 'judge.Contest',
-                    'icon': 'fa-bar-chart',
-                    'children': [
-                        'judge.ContestParticipation',
-                        'judge.ContestTag',
-                    ],
-                },
-                {
-                    'model': 'auth.User',
-                    'icon': 'fa-user',
-                    'children': [
-                        'auth.Group',
-                        'registration.RegistrationProfile',
-                    ],
-                },
-                {
-                    'model': 'judge.Profile',
-                    'icon': 'fa-user-plus',
-                    'children': [
-                        'judge.Organization',
-                        'judge.OrganizationRequest',
-                    ],
-                },
-                {
-                    'model': 'judge.NavigationBar',
-                    'icon': 'fa-bars',
-                    'children': [
-                        'judge.MiscConfig',
-                        'judge.License',
-                        'sites.Site',
-                        'redirects.Redirect',
-                    ],
-                },
-                ('judge.BlogPost', 'fa-rss-square'),
-                ('judge.Comment', 'fa-comment-o'),
-                ('flatpages.FlatPage', 'fa-file-text-o'),
-                ('judge.Solution', 'fa-pencil'),
-            ],
-            'dashboard': {
-                'breadcrumbs': True,
-            },
-        }
-    }
-
-INSTALLED_APPS += (
+INSTALLED_APPS = (
+    'judge.apps.SuitConfig',
     'django.contrib.admin',
-    'judge',
     'django.contrib.auth',
+    'judge',
     'django.contrib.contenttypes',
     'django.contrib.flatpages',
     'django.contrib.sessions',
@@ -140,6 +61,7 @@ INSTALLED_APPS += (
     'statici18n',
     'impersonate',
     'django_jinja',
+    'import_export',
 )
 
 MIDDLEWARE = (
@@ -285,13 +207,19 @@ MARKDOWN_STYLES = {
     'ticket': MARKDOWN_USER_LARGE_STYLE,
 }
 
-# Database
-# https://docs.djangoproject.com/en/1.11/ref/settings/#databases
-
+# Your database credentials. Only MySQL is supported by HBUOJ.
+# Documentation: <https://docs.djangoproject.com/en/1.11/ref/databases/>
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'hbuoj',
+        'USER': 'hbuoj',
+        'PASSWORD': 'hbuoj',
+        'HOST': 'localhost',
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+            'sql_mode': 'NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES',
+        },
     }
 }
 
@@ -321,11 +249,20 @@ USE_L10N = True
 USE_TZ = True
 
 # Cookies
-SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_CACHE_ALIAS = 'default'
+
+# CDN control.
+# Base URL for a copy of ace editor.
+# Should contain ace.js, along with mode-*.js.
+ACE_URL = '//cdn.bootcss.com/ace/1.3.1/'
+JQUERY_JS = '//cdn.bootcss.com/jquery/2.2.4/jquery.min.js'
+SELECT2_JS_URL = '//cdn.bootcss.com/select2/4.0.6-rc.1/js/select2.min.js'
+SELECT2_CSS_URL = '//cdn.bootcss.com/select2/4.0.6-rc.1/css/select2.min.css'
+FONTAWESOME_CSS = '//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
-
 DMOJ_RESOURCES = os.path.join(BASE_DIR, 'resources')
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
@@ -334,10 +271,32 @@ STATICFILES_FINDERS = (
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'resources'),
 ]
+STATIC_ROOT = '/tmp/static'
 STATIC_URL = '/static/'
 
-# Define a cache
-CACHES = {}
+# django-compressor settings, for speeding up page load times by minifying CSS and JavaScript files.
+# Documentation: https://django-compressor.readthedocs.io/en/latest/
+COMPRESS_OUTPUT_DIR = 'cache'
+COMPRESS_CSS_FILTERS = [
+    'compressor.filters.css_default.CssAbsoluteFilter',
+    'compressor.filters.cssmin.CSSMinFilter',
+]
+COMPRESS_JS_FILTERS = ['compressor.filters.jsmin.JSMinFilter']
+COMPRESS_STORAGE = 'compressor.storage.GzipCompressorFileStorage'
+STATICFILES_FINDERS += ('compressor.finders.CompressorFinder',)
+
+# Caching. You can use memcached or redis instead.
+# Documentation: <https://docs.djangoproject.com/en/1.11/topics/cache/>
+CACHES = {
+    'default': {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://localhost:6379",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "CONNECTION_POOL_KWARGS": {"max_connections": 1024}
+        }
+    }
+}
 
 # Authentication
 AUTHENTICATION_BACKENDS = (
@@ -370,6 +329,8 @@ SOCIAL_AUTH_SLUGIFY_USERNAMES = True
 SOCIAL_AUTH_SLUGIFY_FUNCTION = 'judge.social_auth.slugify_username'
 
 JUDGE_AMQP_PATH = None
+
+DEFAULT_USER_LANGUAGE = 'CPP11'
 
 try:
     with open(os.path.join(os.path.dirname(__file__), 'local_settings.py')) as f:
