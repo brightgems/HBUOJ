@@ -6,7 +6,6 @@ from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.core.cache import cache
 from django.core.cache.utils import make_template_fragment_key
-from django.core.exceptions import ValidationError
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 
@@ -132,7 +131,14 @@ def misc_config_update(sender, instance, **kwargs):
 
 
 @receiver(post_save, sender=User)
-def user_save(sender, instance, **kwargs):
-    profile, _ = Profile.objects.get_or_create(user=instance, defaults={
-        'language': Language.get_python2()
-    })
+def user_save(sender, instance, created, **kwargs):
+    if created:
+        if isinstance(instance.profile, Profile):
+            instance.profile.user = instance
+            instance.profile.save()
+        else:
+            profile, _ = Profile.objects.get_or_create(user=instance, defaults={
+                'language': Language.objects.get(key=getattr(settings,
+                                                             'DEFAULT_USER_LANGUAGE',
+                                                             'C++11'))
+            })

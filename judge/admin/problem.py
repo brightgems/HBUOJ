@@ -9,6 +9,7 @@ from django.forms import ModelForm
 from django.utils.html import format_html
 from django.utils.translation import ugettext, ungettext, ugettext_lazy as _
 from reversion.admin import VersionAdmin
+from suit import apps
 
 from judge.models import Profile, LanguageLimit, ProblemTranslation, Problem, ProblemClarification
 from judge.models import Solution
@@ -138,6 +139,17 @@ class ProblemAdmin(VersionAdmin):
     list_filter = ('is_public', ProblemCreatorListFilter)
     form = ProblemForm
     date_hierarchy = 'date'
+
+    suit_form_size = {
+        'widgets': {
+            'HeavyPreviewAdminPageDownWidget': apps.SUIT_FORM_SIZE_XXX_LARGE,
+            'HeavyPreviewPageDownWidget': apps.SUIT_FORM_SIZE_XXX_LARGE,
+        },
+    }
+
+    class Media:
+        js = ('libs/jquery-cookie.js',)
+
 
     def get_actions(self, request):
         actions = super(ProblemAdmin, self).get_actions(request)
