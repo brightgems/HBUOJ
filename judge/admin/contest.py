@@ -28,7 +28,7 @@ class ContestTagForm(ModelForm):
         label=_('Included contests'),
         queryset=Contest.objects.all(),
         required=False,
-        widget=HeavySelect2MultipleWidget(data_view='contest_select2'))
+        widget=HeavySelect2MultipleWidget(data_view='contest_select2', attrs={'style': 'width: 100%'}))
 
 
 class ContestTagAdmin(admin.ModelAdmin):
@@ -37,6 +37,13 @@ class ContestTagAdmin(admin.ModelAdmin):
     actions_on_top = True
     actions_on_bottom = True
     form = ContestTagForm
+
+    suit_form_size = {
+        'fields': {
+            'description': apps.SUIT_FORM_SIZE_FULL,
+            'contests': apps.SUIT_FORM_SIZE_INLINE,
+        },
+    }
 
     if AdminPagedownWidget is not None:
         formfield_overrides = {
@@ -56,7 +63,7 @@ class ContestTagAdmin(admin.ModelAdmin):
 
 class ContestProblemInlineForm(ModelForm):
     class Meta:
-        widgets = {'problem': HeavySelect2Widget(data_view='problem_select2')}
+        widgets = {'problem': HeavySelect2Widget(data_view='problem_select2', attrs={'style': 'width: 100%'})}
 
 
 class ContestProblemInline(admin.TabularInline):
@@ -65,6 +72,8 @@ class ContestProblemInline(admin.TabularInline):
     verbose_name_plural = 'Problems'
     fields = ('problem', 'points', 'partial', 'is_pretested', 'max_submissions', 'output_prefix_override', 'order')
     form = ContestProblemInlineForm
+    extra = 1
+    suit_form_inlines_hide_original = True
 
 
 class ContestForm(ModelForm):
@@ -76,8 +85,9 @@ class ContestForm(ModelForm):
 
     class Meta:
         widgets = {
-            'organizers': HeavySelect2MultipleWidget(data_view='profile_select2'),
-            'organizations': HeavySelect2MultipleWidget(data_view='organization_select2'),
+            'organizers': HeavySelect2MultipleWidget(data_view='profile_select2', attrs={'style': 'width: 100%'}),
+            'organizations': HeavySelect2MultipleWidget(data_view='organization_select2',
+                                                        attrs={'style': 'width: 100%'}),
             'tags': Select2MultipleWidget
         }
 
@@ -103,6 +113,16 @@ class ContestAdmin(VersionAdmin):
     change_list_template = 'admin/judge/contest/change_list.html'
     filter_horizontal = ['rate_exclude']
     date_hierarchy = 'start_time'
+
+    suit_form_size = {
+        'widgets': {
+            'AdminPageDownWidget': apps.SUIT_FORM_SIZE_FULL,
+            'HeavyPreviewAdminPageDownWidget': apps.SUIT_FORM_SIZE_FULL
+        },
+    }
+
+    class Media:
+        js = ('libs/jquery-cookie.js',)
 
     def get_queryset(self, request):
         queryset = Contest.objects.all()
@@ -131,6 +151,7 @@ class ContestAdmin(VersionAdmin):
         self.message_user(request, ungettext('%d contest successfully marked as public.',
                                              '%d contests successfully marked as public.',
                                              count) % count)
+
     make_public.short_description = _('Mark contests as public')
 
     def make_private(self, request, queryset):
@@ -138,6 +159,7 @@ class ContestAdmin(VersionAdmin):
         self.message_user(request, ungettext('%d contest successfully marked as private.',
                                              '%d contests successfully marked as private.',
                                              count) % count)
+
     make_private.short_description = _('Mark contests as private')
 
     def get_urls(self):
@@ -206,6 +228,9 @@ class ContestParticipationAdmin(admin.ModelAdmin):
         },
     }
 
+    class Media:
+        js = ('libs/jquery-cookie.js',)
+
     def get_queryset(self, request):
         return super(ContestParticipationAdmin, self).get_queryset(request).only(
             'contest__name', 'user__user__username', 'user__name', 'real_start', 'score', 'cumtime', 'virtual'
@@ -219,6 +244,7 @@ class ContestParticipationAdmin(admin.ModelAdmin):
         self.message_user(request, ungettext('%d participation have scores recalculated.',
                                              '%d participations have scores recalculated.',
                                              count) % count)
+
     recalculate_points.short_description = _('Recalculate scores')
 
     def recalculate_cumtime(self, request, queryset):
@@ -229,14 +255,17 @@ class ContestParticipationAdmin(admin.ModelAdmin):
         self.message_user(request, ungettext('%d participation have times recalculated.',
                                              '%d participations have times recalculated.',
                                              count) % count)
+
     recalculate_cumtime.short_description = _('Recalculate cumulative time')
 
     def username(self, obj):
         return obj.user.long_display_name
+
     username.short_description = _('username')
     username.admin_order_field = 'user__user__username'
 
     def show_virtual(self, obj):
         return obj.virtual or '-'
+
     show_virtual.short_description = _('virtual')
     show_virtual.admin_order_field = 'virtual'

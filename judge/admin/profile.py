@@ -56,11 +56,17 @@ class ProfileAdmin(VersionAdmin):
     form = ProfileForm
 
     suit_form_size = {
+        'fields': {
+            'about': apps.SUIT_FORM_SIZE_FULL,
+        },
         'widgets': {
             'AdminPageDownWidget': apps.SUIT_FORM_SIZE_FULL,
             'AceWidget': apps.SUIT_FORM_SIZE_INLINE
         },
     }
+
+    class Media:
+        js = ('libs/jquery-cookie.js',)
 
     def show_public(self, obj):
         return format_html(u'<a href="{0}" style="white-space:nowrap;">{1}</a>',

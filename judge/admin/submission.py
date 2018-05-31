@@ -10,6 +10,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _, pgettext, ugettext, ungettext
+from suit import apps
 
 from django_ace import AceWidget
 from judge.models import Submission, SubmissionTestCase, ContestSubmission, ContestParticipation, ContestProblem, \
@@ -58,6 +59,7 @@ class SubmissionTestCaseInline(admin.TabularInline):
     model = SubmissionTestCase
     can_delete = False
     max_num = 0
+    suit_form_inlines_hide_original = True
 
 
 class ContestSubmissionInline(admin.StackedInline):
@@ -101,6 +103,15 @@ class SubmissionAdmin(admin.ModelAdmin):
     actions_on_top = True
     actions_on_bottom = True
     inlines = [SubmissionTestCaseInline, ContestSubmissionInline]
+    suit_form_size = {
+        'widgets': {
+            'HeavyPreviewAdminPageDownWidget': apps.SUIT_FORM_SIZE_FULL,
+            'AceWidget': apps.SUIT_FORM_SIZE_FULL,
+        },
+    }
+
+    class Media:
+        js = ('libs/jquery-cookie.js',)
 
     def get_queryset(self, request):
         queryset = Submission.objects.only(
@@ -141,6 +152,7 @@ class SubmissionAdmin(admin.ModelAdmin):
         self.message_user(request, ungettext('%d submission were successfully scheduled for rejudging.',
                                              '%d submissions were successfully scheduled for rejudging.',
                                              judged) % judged)
+
     judge.short_description = _('Rejudge the selected submissions')
 
     def recalculate_score(self, request, queryset):
@@ -177,15 +189,18 @@ class SubmissionAdmin(admin.ModelAdmin):
         self.message_user(request, ungettext('%d submission were successfully rescored.',
                                              '%d submissions were successfully rescored.',
                                              len(submissions)) % len(submissions))
+
     recalculate_score.short_description = _('Rescore the selected submissions')
 
     def problem_code(self, obj):
         return obj.problem.code
+
     problem_code.short_description = _('Problem code')
     problem_code.admin_order_field = 'problem__code'
 
     def problem_name(self, obj):
         return obj.problem.name
+
     problem_name.short_description = _('Problem name')
     problem_name.admin_order_field = 'problem__name'
 
@@ -193,11 +208,13 @@ class SubmissionAdmin(admin.ModelAdmin):
         return format_html(u'<span title="{display}">{username}</span>',
                            username=obj.user.user.username,
                            display=obj.user.name)
+
     user_column.admin_order_field = 'user__user__username'
     user_column.short_description = _('User')
 
     def execution_time(self, obj):
         return round(obj.time, 2) if obj.time is not None else 'None'
+
     execution_time.short_description = _('Time')
     execution_time.admin_order_field = 'time'
 
@@ -209,11 +226,13 @@ class SubmissionAdmin(admin.ModelAdmin):
             return ugettext('%d KB') % memory
         else:
             return ugettext('%.2f MB') % (memory / 1024.)
+
     pretty_memory.admin_order_field = 'memory'
     pretty_memory.short_description = _('Memory')
 
     def judge_column(self, obj):
         return '<input type="button" value="Rejudge" onclick="location.href=\'%s/judge/\'" />' % obj.id
+
     judge_column.short_description = ''
     judge_column.allow_tags = True
 

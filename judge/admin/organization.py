@@ -13,7 +13,7 @@ from judge.widgets import HeavySelect2MultipleWidget, HeavySelect2Widget, HeavyP
 class OrganizationForm(ModelForm):
     class Meta:
         widgets = {
-            'admins': HeavySelect2MultipleWidget(data_view='profile_select2'),
+            'admins': HeavySelect2MultipleWidget(data_view='profile_select2', attrs={'style': 'width: 100%'}),
             'registrant': HeavySelect2Widget(data_view='profile_select2'),
         }
         if HeavyPreviewAdminPageDownWidget is not None:
@@ -33,6 +33,9 @@ class OrganizationAdmin(VersionAdmin):
             'HeavyPreviewAdminPageDownWidget': apps.SUIT_FORM_SIZE_FULL
         },
     }
+
+    class Media:
+        js = ('libs/jquery-cookie.js',)
 
     def show_public(self, obj):
         return format_html(u'<a href="{0}" style="white-space:nowrap;">{1}</a>',
@@ -67,5 +70,6 @@ class OrganizationRequestAdmin(admin.ModelAdmin):
 
     def username(self, obj):
         return obj.user.user.username
+
     username.short_description = _('username')
     username.admin_order_field = 'user__user__username'

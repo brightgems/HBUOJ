@@ -25,13 +25,14 @@ class NavigationBarAdmin(DraggableMPTTAdmin):
 
     def linked_path(self, obj):
         return format_html(u'<a href="{0}" target="_blank">{0}</a>', obj.path)
+
     linked_path.short_description = _('link path')
 
     def save_model(self, request, obj, form, change):
         self.__save_model_calls += 1
         return super(NavigationBarAdmin, self).save_model(request, obj, form, change)
 
-    def changelist_view(self, request, extra_context=None):
+    def changelist_view(self, request, extra_context=None, **kwargs):
         self.__save_model_calls = 0
         with NavigationBar.objects.disable_mptt_updates():
             result = super(NavigationBarAdmin, self).changelist_view(request, extra_context)
@@ -78,8 +79,8 @@ class BlogPostAdmin(VersionAdmin):
     def has_change_permission(self, request, obj=None):
         return (request.user.has_perm('judge.edit_all_post') or
                 request.user.has_perm('judge.change_blogpost') and (
-                    obj is None or
-                    obj.authors.filter(id=request.user.profile.id).exists()))
+                        obj is None or
+                        obj.authors.filter(id=request.user.profile.id).exists()))
 
 
 class SolutionForm(ModelForm):
@@ -107,3 +108,12 @@ class LicenseAdmin(admin.ModelAdmin):
     fields = ('key', 'link', 'name', 'display', 'icon', 'text')
     list_display = ('name', 'key')
     form = LicenseForm
+
+    suit_form_size = {
+        'fields': {
+            'text': apps.SUIT_FORM_SIZE_FULL,
+        },
+    }
+
+    class Media:
+        js = ('libs/jquery-cookie.js',)

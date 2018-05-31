@@ -4,6 +4,7 @@ from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from reversion.admin import VersionAdmin
+from suit import apps
 
 from django_ace import AceWidget
 from judge.models import Problem
@@ -16,7 +17,7 @@ class LanguageForm(ModelForm):
         queryset=Problem.objects.all(),
         required=False,
         help_text=_('These problems are NOT allowed to be submitted in this language'),
-        widget=HeavySelect2MultipleWidget(data_view='problem_select2'))
+        widget=HeavySelect2MultipleWidget(data_view='problem_select2', attrs={'style': 'width: 100%'}))
 
     class Meta:
         if AdminPagedownWidget is not None:
@@ -28,6 +29,15 @@ class LanguageAdmin(VersionAdmin):
               'template', 'problems')
     list_display = ('key', 'name', 'common_name', 'info')
     form = LanguageForm
+    suit_form_size = {
+        'widgets': {
+            'AdminPagedownWidget': apps.SUIT_FORM_SIZE_FULL,
+            'AceWidget': apps.SUIT_FORM_SIZE_INLINE
+        },
+    }
+
+    class Media:
+        js = ('libs/jquery-cookie.js',)
 
     def save_model(self, request, obj, form, change):
         super(LanguageAdmin, self).save_model(request, obj, form, change)
@@ -84,6 +94,14 @@ class JudgeAdmin(VersionAdmin):
     )
     list_display = ('name', 'online', 'start_time', 'ping', 'load', 'last_ip')
     ordering = ['-online', 'name']
+    suit_form_size = {
+        'fields': {
+            'problems': apps.SUIT_FORM_SIZE_FULL
+        },
+        'widgets': {
+            'AdminPagedownWidget': apps.SUIT_FORM_SIZE_FULL
+        },
+    }
 
     def get_readonly_fields(self, request, obj=None):
         if obj is not None and obj.online:

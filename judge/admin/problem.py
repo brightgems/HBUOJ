@@ -64,6 +64,7 @@ class LanguageLimitInline(admin.TabularInline):
     model = LanguageLimit
     fields = ('language', 'time_limit', 'memory_limit')
     form = LanguageLimitInlineForm
+    suit_form_inlines_hide_original = True
 
 
 class ProblemClarificationForm(ModelForm):

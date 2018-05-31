@@ -56,6 +56,7 @@ class SuitConfig(DjangoSuitConfig):
             ChildItem(model='judge.judge'),
         ], icon='fa fa-check-square-o'),
         ParentItem('Contest', children=[
+            ChildItem(model='judge.contest'),
             ChildItem(model='judge.contestparticipation'),
             ChildItem(model='judge.contesttag'),
         ], icon='fa fa-bar-chart'),

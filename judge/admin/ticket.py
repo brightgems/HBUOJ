@@ -44,3 +44,6 @@ class TicketAdmin(ModelAdmin):
             'HeavyPreviewAdminPageDownWidget': apps.SUIT_FORM_SIZE_FULL
         },
     }
+
+    class Media:
+        js = ('libs/jquery-cookie.js',)

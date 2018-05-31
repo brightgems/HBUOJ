@@ -39,6 +39,9 @@ class CommentAdmin(VersionAdmin):
         },
     }
 
+    class Media:
+        js = ('libs/jquery-cookie.js',)
+
     def get_queryset(self, request):
         return Comment.objects.order_by('-time')
 
