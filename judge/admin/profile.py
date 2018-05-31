@@ -3,6 +3,7 @@ from django.forms import ModelForm
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _, ugettext, ungettext
 from reversion.admin import VersionAdmin
+from suit import apps
 
 from django_ace import AceWidget
 from judge.models import Profile
@@ -53,6 +54,13 @@ class ProfileAdmin(VersionAdmin):
     actions_on_top = True
     actions_on_bottom = True
     form = ProfileForm
+
+    suit_form_size = {
+        'widgets': {
+            'AdminPageDownWidget': apps.SUIT_FORM_SIZE_FULL,
+            'AceWidget': apps.SUIT_FORM_SIZE_INLINE
+        },
+    }
 
     def show_public(self, obj):
         return format_html(u'<a href="{0}" style="white-space:nowrap;">{1}</a>',

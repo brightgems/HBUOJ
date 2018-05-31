@@ -2,6 +2,7 @@ from django.contrib.admin import ModelAdmin
 from django.contrib.admin.options import StackedInline
 from django.forms import ModelForm
 from django.urls import reverse_lazy
+from suit import apps
 
 from judge.models import TicketMessage
 from judge.widgets import HeavySelect2Widget, HeavySelect2MultipleWidget, HeavyPreviewAdminPageDownWidget
@@ -37,3 +38,9 @@ class TicketAdmin(ModelAdmin):
     inlines = [TicketMessageInline]
     form = TicketForm
     date_hierarchy = 'time'
+
+    suit_form_size = {
+        'widgets': {
+            'HeavyPreviewAdminPageDownWidget': apps.SUIT_FORM_SIZE_FULL
+        },
+    }

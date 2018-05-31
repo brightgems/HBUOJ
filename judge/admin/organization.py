@@ -4,6 +4,7 @@ from django.urls import reverse_lazy
 from django.utils.html import format_html
 from django.utils.translation import ugettext, ugettext_lazy as _
 from reversion.admin import VersionAdmin
+from suit import apps
 
 from judge.models import Organization
 from judge.widgets import HeavySelect2MultipleWidget, HeavySelect2Widget, HeavyPreviewAdminPageDownWidget
@@ -26,6 +27,12 @@ class OrganizationAdmin(VersionAdmin):
     actions_on_top = True
     actions_on_bottom = True
     form = OrganizationForm
+
+    suit_form_size = {
+        'widgets': {
+            'HeavyPreviewAdminPageDownWidget': apps.SUIT_FORM_SIZE_FULL
+        },
+    }
 
     def show_public(self, obj):
         return format_html(u'<a href="{0}" style="white-space:nowrap;">{1}</a>',

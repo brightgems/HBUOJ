@@ -3,6 +3,7 @@ from django.urls import reverse_lazy
 from django.utils.html import format_html
 from django.utils.translation import ungettext, ugettext_lazy as _
 from reversion.admin import VersionAdmin
+from suit import apps
 
 from judge.models import Comment
 from judge.widgets import HeavyPreviewAdminPageDownWidget, HeavySelect2Widget
@@ -31,6 +32,12 @@ class CommentAdmin(VersionAdmin):
     actions_on_bottom = True
     form = CommentForm
     date_hierarchy = 'time'
+
+    suit_form_size = {
+        'widgets': {
+            'HeavyPreviewAdminPageDownWidget': apps.SUIT_FORM_SIZE_FULL
+        },
+    }
 
     def get_queryset(self, request):
         return Comment.objects.order_by('-time')

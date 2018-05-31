@@ -257,8 +257,8 @@ SESSION_CACHE_ALIAS = 'default'
 # Should contain ace.js, along with mode-*.js.
 ACE_URL = '//cdn.bootcss.com/ace/1.3.1/'
 JQUERY_JS = '//cdn.bootcss.com/jquery/2.2.4/jquery.min.js'
-SELECT2_JS_URL = '//cdn.bootcss.com/select2/4.0.6-rc.1/js/select2.min.js'
-SELECT2_CSS_URL = '//cdn.bootcss.com/select2/4.0.6-rc.1/css/select2.min.css'
+SELECT2_JS_URL = '//cdn.bootcss.com/select2/4.0.3/js/select2.min.js'
+SELECT2_CSS_URL = '//cdn.bootcss.com/select2/4.0.3/css/select2.min.css'
 FONTAWESOME_CSS = '//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css'
 
 # Static files (CSS, JavaScript, Images)

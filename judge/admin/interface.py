@@ -5,6 +5,7 @@ from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 from mptt.admin import DraggableMPTTAdmin
 from reversion.admin import VersionAdmin
+from suit import apps
 
 from judge.dblock import LockModel
 from judge.models import NavigationBar
@@ -67,6 +68,12 @@ class BlogPostAdmin(VersionAdmin):
     ordering = ('-publish_on',)
     form = BlogPostForm
     date_hierarchy = 'publish_on'
+
+    suit_form_size = {
+        'widgets': {
+            'HeavyPreviewAdminPageDownWidget': apps.SUIT_FORM_SIZE_FULL
+        },
+    }
 
     def has_change_permission(self, request, obj=None):
         return (request.user.has_perm('judge.edit_all_post') or

@@ -9,6 +9,7 @@ from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _, ungettext
 from reversion.admin import VersionAdmin
+from suit import apps
 
 from judge.models import Contest, ContestProblem, Profile, Rating
 from judge.ratings import rate_contest
@@ -197,6 +198,13 @@ class ContestParticipationAdmin(admin.ModelAdmin):
     search_fields = ('contest__key', 'contest__name', 'user__user__username', 'user__name')
     form = ContestParticipationForm
     date_hierarchy = 'real_start'
+
+    suit_form_size = {
+        'widgets': {
+            'AdminPageDownWidget': apps.SUIT_FORM_SIZE_FULL,
+            'HeavyPreviewAdminPageDownWidget': apps.SUIT_FORM_SIZE_FULL
+        },
+    }
 
     def get_queryset(self, request):
         return super(ContestParticipationAdmin, self).get_queryset(request).only(

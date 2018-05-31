@@ -35,7 +35,7 @@ class ProblemForm(ModelForm):
             'curators': HeavySelect2MultipleWidget(data_view='profile_select2', attrs={'style': 'width: 100%'}),
             'testers': HeavySelect2MultipleWidget(data_view='profile_select2', attrs={'style': 'width: 100%'}),
             'banned_users': HeavySelect2MultipleWidget(data_view='profile_select2', attrs={'style': 'width: 100%'}),
-            'types': Select2MultipleWidget,
+            'types': Select2MultipleWidget(attrs={'style': 'width: 100%'}),
             'group': Select2Widget,
         }
         if HeavyPreviewAdminPageDownWidget is not None:
@@ -78,6 +78,13 @@ class ProblemClarificationInline(admin.StackedInline):
     form = ProblemClarificationForm
     extra = 0
 
+    suit_form_size = {
+        'widgets': {
+            'AdminPageDownWidget': apps.SUIT_FORM_SIZE_FULL,
+            'HeavyPreviewAdminPageDownWidget': apps.SUIT_FORM_SIZE_FULL
+        },
+    }
+
 
 class ProblemSolutionForm(ModelForm):
     def __init__(self, *args, **kwargs):
@@ -99,6 +106,13 @@ class ProblemSolutionInline(admin.StackedInline):
     form = ProblemSolutionForm
     extra = 0
 
+    suit_form_size = {
+        'widgets': {
+            'AdminPageDownWidget': apps.SUIT_FORM_SIZE_FULL,
+            'HeavyPreviewAdminPageDownWidget': apps.SUIT_FORM_SIZE_FULL
+        },
+    }
+
 
 class ProblemTranslationForm(ModelForm):
     class Meta:
@@ -112,15 +126,22 @@ class ProblemTranslationInline(admin.StackedInline):
     form = ProblemTranslationForm
     extra = 0
 
+    suit_form_size = {
+        'widgets': {
+            'AdminPageDownWidget': apps.SUIT_FORM_SIZE_FULL,
+            'HeavyPreviewAdminPageDownWidget': apps.SUIT_FORM_SIZE_FULL
+        },
+    }
+
 
 class ProblemAdmin(VersionAdmin):
     fieldsets = (
         (None, {
             'fields': (
                 'code', 'name', 'is_public', 'is_manually_managed', 'date', 'authors', 'curators', 'testers',
-                'description',
                 'license')
         }),
+        (None, {'classes': ('full-width',), 'fields': ('description',)}),
         (_('Social Media'), {'classes': ('collapse',), 'fields': ('og_image', 'summary')}),
         (_('Taxonomy'), {'fields': ('types', 'group')}),
         (_('Points'), {'fields': (('points', 'partial'), 'short_circuit')}),
@@ -142,14 +163,13 @@ class ProblemAdmin(VersionAdmin):
 
     suit_form_size = {
         'widgets': {
-            'HeavyPreviewAdminPageDownWidget': apps.SUIT_FORM_SIZE_XXX_LARGE,
-            'HeavyPreviewPageDownWidget': apps.SUIT_FORM_SIZE_XXX_LARGE,
+            'HeavyPreviewAdminPageDownWidget': apps.SUIT_FORM_SIZE_FULL,
+            'HeavyPreviewPageDownWidget': apps.SUIT_FORM_SIZE_FULL,
         },
     }
 
     class Media:
         js = ('libs/jquery-cookie.js',)
-
 
     def get_actions(self, request):
         actions = super(ProblemAdmin, self).get_actions(request)
