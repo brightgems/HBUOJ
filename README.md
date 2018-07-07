@@ -2,7 +2,7 @@ HBU Online Judge
 =====
 [![Python](https://img.shields.io/badge/python-2.7-blue.svg)](https://www.python.org/downloads/release/python-362/)
 [![Django](https://img.shields.io/badge/django-1.11-blue.svg)](https://www.djangoproject.com/)
-[![codebeat badge](https://codebeat.co/badges/3cf4e90b-6a92-4502-a888-edf7221c0b0e)](https://codebeat.co/projects/github-com-monouno-onlinejudge-master)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/b881b108692a4e268c597ebf45edc3cf)](https://www.codacy.com/app/xingji2163/HBUOJ?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=HBUCS/HBUOJ&amp;utm_campaign=Badge_Grade)
 [![Build Status](https://travis-ci.org/HBUCS/HBUOJ.svg?branch=master)](https://travis-ci.org/HBUCS/HBUOJ)
 
 Online Judge System for college education.
