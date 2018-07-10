@@ -15,7 +15,8 @@ class TimezoneMiddleware(object):
     def process_request(self, request):
         timezone.activate(self.get_timezone(request))
 
-    def get_timezone(self, request):
+    @staticmethod
+    def get_timezone(request):
         if request.user.is_authenticated:
             try:
                 tzname = Profile.objects.get(user=request.user).timezone
@@ -25,7 +26,8 @@ class TimezoneMiddleware(object):
             tzname = getattr(settings, 'DEFAULT_USER_TIME_ZONE', 'Asia/Shanghai')
         return pytz.timezone(tzname)
 
-    def process_response(self, request, response):
+    @staticmethod
+    def process_response(request, response):
         timezone.deactivate()
         return response
 

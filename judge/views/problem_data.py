@@ -140,10 +140,6 @@ class ProblemDataView(TitleMixin, ProblemManagerMixin):
         return _('Editing data for {0}').format(self.object.name)
 
     def get_content_title(self):
-        return format_html(_(u'Editing data for <a href="{1}">{0}</a>'), self.object.name,
-                           reverse('problem_detail', args=[self.object.code]))
-
-    def get_content_title(self):
         return mark_safe(escape(_('Editing data for %s')) % (
             format_html(u'<a href="{1}">{0}</a>', self.object.name,
                         reverse('problem_detail', args=[self.object.code]))))
@@ -204,8 +200,8 @@ class ProblemDataView(TitleMixin, ProblemManagerMixin):
 
 @login_required
 def problem_data_file(request, problem, path):
-    object = get_object_or_404(Problem, code=problem)
-    if not object.is_editable_by(request.user):
+    obj = get_object_or_404(Problem, code=problem)
+    if not obj.is_editable_by(request.user):
         raise Http404()
 
     response = HttpResponse()

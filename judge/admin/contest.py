@@ -15,15 +15,15 @@ from suit import apps
 
 from judge.models import Contest, ContestProblem, Profile, Rating
 from judge.ratings import rate_contest
-from judge.widgets import HeavySelect2Widget, HeavySelect2MultipleWidget, Select2MultipleWidget, \
-    Select2Widget
+from judge.widgets import HeavySelect2Widget as HeavySelect2Widget_, \
+    HeavySelect2MultipleWidget, Select2MultipleWidget, Select2Widget
 
 ACE_BASE_URL = getattr(settings, 'ACE_BASE_URL', '//cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/')
 HIGHLIGHT_BASE_URL = getattr(settings, 'HIGHLIGHT_BASE_URL', '//cdn.bootcss.com/highlight.js/9.12.0/')
 MATHJAX_URL = getattr(settings, 'MATHJAX_URL', '//cdn.bootcss.com/mathjax/2.7.4/MathJax.js')
 
 
-class HeavySelect2Widget(HeavySelect2Widget):
+class HeavySelect2Widget(HeavySelect2Widget_):
     @property
     def is_hidden(self):
         return False
@@ -174,7 +174,8 @@ class ContestAdmin(VersionAdmin):
         return [url(r'^rate/all/$', self.rate_all_view, name='judge_contest_rate_all'),
                 url(r'^(\d+)/rate/$', self.rate_view, name='judge_contest_rate')] + super(ContestAdmin, self).get_urls()
 
-    def rate_all_view(self, request):
+    @staticmethod
+    def rate_all_view(request):
         if not request.user.has_perm('judge.contest_rating'):
             raise PermissionDenied()
         with transaction.atomic():
@@ -189,10 +190,11 @@ class ContestAdmin(VersionAdmin):
                 rate_contest(contest)
         return HttpResponseRedirect(reverse('admin:judge_contest_changelist'))
 
-    def rate_view(self, request, id):
+    @staticmethod
+    def rate_view(request, pk):
         if not request.user.has_perm('judge.contest_rating'):
             raise PermissionDenied()
-        contest = get_object_or_404(Contest, id=id)
+        contest = get_object_or_404(Contest, pk=pk)
         if not contest.is_rated:
             raise Http404()
         with transaction.atomic():

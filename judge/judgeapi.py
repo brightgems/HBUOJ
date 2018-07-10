@@ -24,18 +24,18 @@ def judge_request(packet, reply=True):
 
     if reply:
         reader = sock.makefile('r', -1)
-        input = reader.read(size_pack.size)
-        if not input:
+        data = reader.read(size_pack.size)
+        if not data:
             raise ValueError('Judge did not respond')
-        length = size_pack.unpack(input)[0]
-        input = reader.read(length)
-        if not input:
+        length = size_pack.unpack(data)[0]
+        data = reader.read(length)
+        if not data:
             raise ValueError('Judge did not respond')
         reader.close()
         sock.close()
 
-        input = input.decode('zlib')
-        result = json.loads(input)
+        data = data.decode('zlib')
+        result = json.loads(data)
         return result
 
 

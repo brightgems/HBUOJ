@@ -279,15 +279,17 @@ class Problem(models.Model):
         cache.set(key, result)
         return result
 
-    def save(self, *args, **kwargs):
-        super(Problem, self).save(*args, **kwargs)
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        super(Problem, self).save(force_insert=force_insert, force_update=force_update, using=None,
+                                  update_fields=update_fields)
         if self.code != self.__original_code:
             try:
                 problem_data = self.data_files
             except AttributeError:
                 pass
             else:
-                problem_data._update_code(self.__original_code, self.code)
+                problem_data.update_code(self.__original_code, self.code)
     save.alters_data = True
 
     class Meta:

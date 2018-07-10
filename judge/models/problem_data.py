@@ -57,7 +57,7 @@ class ProblemData(models.Model):
     def has_yml(self):
         return problem_data_storage.exists('%s/init.yml' % self.problem.code)
 
-    def _update_code(self, original, new):
+    def update_code(self, original, new):
         try:
             problem_data_storage.rename(original, new)
         except OSError as e:
@@ -68,7 +68,7 @@ class ProblemData(models.Model):
         if self.generator:
             self.generator.name = _problem_directory_file(new, self.generator.name)
         self.save()
-    _update_code.alters_data = True
+    update_code.alters_data = True
 
 
 class ProblemTestCase(models.Model):
