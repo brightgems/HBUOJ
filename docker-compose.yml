@@ -1,0 +1,25 @@
+version: "3"
+services:
+
+  redis:
+    image: redis:latest
+    restart: always
+
+  db:
+    image: mysql:latest
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      - MYSQL_DATABASE=hbuoj
+      - MYSQL_USER=hbuoj
+      - MYSQL_PASSWORD=hbuoj
+      - MYSQL_RANDOM_ROOT_PASSWORD=yes
+    ports:
+      - "127.0.0.1:3306:3306"
+
+  site:
+    image: hbuoj-site:latest
+    container_name: hbuoj-site
+    restart: always
+    ports:
+      - "0.0.0.0:80:8080"

@@ -54,8 +54,6 @@ INSTALLED_APPS = (
     'impersonate',
     'django_jinja',
     'import_export',
-    'martor',
-    'mama_cas',
 )
 
 MIDDLEWARE = (
