@@ -1,8 +1,8 @@
 import glob
+import io
 import os
 import sys
 
-import io
 from django.conf import settings
 from django.core.management import CommandError
 from django.core.management.commands.makemessages import Command as MakeMessagesCommand, check_programs
@@ -29,7 +29,7 @@ class Command(MakeMessagesCommand):
     def handle(self, *args, **options):
         locale = options.get('locale')
         exclude = options.get('exclude')
-        self.domain = 'dmoj-user'
+        self.domain = 'hbuoj-user'
         self.verbosity = options.get('verbosity')
         process_all = options.get('all')
 
@@ -76,8 +76,8 @@ class Command(MakeMessagesCommand):
                     os.makedirs(self.default_locale_path)
 
         # Build locale list
-        locale_dirs = filter(os.path.isdir, glob.glob('%s/*' % self.default_locale_path))
-        all_locales = map(os.path.basename, locale_dirs)
+        locale_dirs = list(filter(os.path.isdir, glob.glob('%s/*' % self.default_locale_path)))
+        all_locales = list(map(os.path.basename, locale_dirs))
 
         # Account for excluded locales
         if process_all:
@@ -114,7 +114,7 @@ msgstr ""
 ''' % string.replace('\\', r'\\').replace('\t', '\\t').replace('\n', '\\n').replace('"', '\\"'))
 
     def process_files(self, file_list):
-        with io.open(os.path.join(self.default_locale_path, 'dmoj-user.pot'), 'w', encoding='utf-8') as potfile:
+        with io.open(os.path.join(self.default_locale_path, 'hbuoj-user.pot'), 'w', encoding='utf-8') as potfile:
             if self.verbosity > 1:
                 self.stdout.write('processing navigation bar')
             for label in NavigationBar.objects.values_list('label', flat=True):

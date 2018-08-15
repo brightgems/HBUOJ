@@ -1,9 +1,11 @@
 import select
+
+from .poll_server import PollServer
+
 __author__ = 'Quantum'
 
 if not hasattr(select, 'epoll'):
     raise ImportError('System does not support epoll')
-from .poll_server import PollServer
 
 
 class EpollServer(PollServer):

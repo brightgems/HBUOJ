@@ -3,9 +3,9 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils.encoding import smart_text
 from django.views.generic.list import BaseListView
+from django_gravatar.templatetags.gravatar import gravatar_url
 
 from judge.models import Profile, Organization, Problem, Comment, Contest
-from judge.jinja2.gravatar import gravatar
 
 
 def _get_user_queryset(term):
@@ -36,7 +36,7 @@ class Select2View(BaseListView):
         })
 
     def get_name(self, obj):
-        return unicode(obj)
+        return str(obj)
 
 
 class UserSelect2View(Select2View):
@@ -103,14 +103,14 @@ class UserSearchSelect2View(BaseListView):
                 {
                     'text': username,
                     'id': username,
-                    'gravatar_url': gravatar(email, self.gravatar_size, self.gravatar_default),
+                    'gravatar_url': gravatar_url(email, self.gravatar_size),
                     'display_rank': display_rank,
                 } for pk, username, email, display_rank in context['object_list']],
             'more': context['page_obj'].has_next(),
         })
 
     def get_name(self, obj):
-        return unicode(obj)
+        return str(obj)
 
 
 class ContestUserSearchSelect2View(UserSearchSelect2View):

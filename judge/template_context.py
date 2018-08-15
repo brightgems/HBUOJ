@@ -37,7 +37,7 @@ def get_resource(request):
 
 def get_profile(request):
     if request.user.is_authenticated:
-        return Profile.objects.get_or_create(user=request.user)[0]
+        return request.user.profile
     return None
 
 

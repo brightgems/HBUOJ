@@ -4,7 +4,7 @@ from django.db.models import Prefetch, F
 from django.http import JsonResponse, Http404
 from django.shortcuts import get_object_or_404
 
-from dmoj import settings
+from hbuoj import settings
 from judge.models import Contest, Problem, Profile, Submission, ContestTag
 from judge.views.contests import base_contest_ranking_list
 
@@ -25,7 +25,7 @@ def api_v1_contest_list(request):
         'start_time': c.start_time.isoformat(),
         'end_time': c.end_time.isoformat(),
         'time_limit': c.time_limit and sane_time_repr(c.time_limit),
-        'labels': map(attrgetter('name'), c.tag_list),
+        'labels': list(map(attrgetter('name'), c.tag_list)),
     } for c in queryset})
 
 

@@ -19,7 +19,7 @@ function EventReceiver(websocket, poller, channels, last_msg, onmessage) {
                     long_poll();
                 },
                 error: function (jqXHR, status, error) {
-                    if (jqXHR.status == 504)
+                    if (jqXHR.status === 504)
                         long_poll();
                     else {
                         console.log('Long poll failure: ' + status);
@@ -58,7 +58,7 @@ function EventReceiver(websocket, poller, channels, last_msg, onmessage) {
             receiver.last_msg = data.id;
         };
         this.websocket.onclose = function (event) {
-            if (event.code != 1000 && receiver.onwsclose !== null)
+            if (event.code !== 1000 && receiver.onwsclose !== null)
                 receiver.onwsclose(event);
         }
     } else {

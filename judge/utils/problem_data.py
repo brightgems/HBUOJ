@@ -6,8 +6,8 @@ import yaml
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage
-from django.core.urlresolvers import reverse
-from django.utils.translation import ugettext as _
+from django.urls import reverse
+from django.utils.translation import gettext as _
 
 if os.altsep:
     def split_path_first(path, repath=re.compile('[%s]' % re.escape(os.sep + os.altsep))):
@@ -84,11 +84,9 @@ class ProblemDataCompiler(object):
 
                 if not self.generator:
                     if case.input_file not in self.files:
-                        raise ProblemDataError(_('Input file for case %d does not exist: %s') %
-                                               (i, case.input_file))
+                        raise ProblemDataError(_(f'Input file for case {i} does not exist: {case.input_file}'))
                     if case.output_file not in self.files:
-                        raise ProblemDataError(_('Output file for case %d does not exist: %s') %
-                                               (i, case.output_file))
+                        raise ProblemDataError(_(f'Output file for case {i} does not exist: {case.output_file}'))
 
                 if case.input_file:
                     data['in'] = case.input_file

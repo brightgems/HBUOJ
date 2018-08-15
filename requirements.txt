@@ -1,10 +1,12 @@
 Django==2.1
 django_compressor
-django-mptt>=0.8.4,<0.10
+django-mptt
 django-reversion
 django-social-share
 django-sortedm2m
 django-impersonate
+django_gravatar2
+django-ace
 lxml
 Pygments
 mistune
@@ -23,7 +25,7 @@ django_select2
 django_anymail
 websocket-client
 https://github.com/darklow/django-suit/tarball/v2
-django-import-export>=1.0.1,<2
+django-import-export
 django-allauth
 gunicorn[gevent]
 raven

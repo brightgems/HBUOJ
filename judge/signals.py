@@ -128,13 +128,3 @@ def misc_config_update(sender, instance, **kwargs):
     cache.delete_many(['misc_config:%s:%s:%s' % (domain, lang, instance.key.split('.')[0])
                        for lang in _misc_config_i18n
                        for domain in Site.objects.values_list('domain', flat=True)])
-
-
-@receiver(post_save, sender=User)
-def user_save(sender, instance, created, **kwargs):
-    if created:
-        profile, _ = Profile.objects.get_or_create(user=instance, defaults={
-            'language': Language.objects.get(key=getattr(settings,
-                                                         'DEFAULT_USER_LANGUAGE',
-                                                         'C++11'))
-        })

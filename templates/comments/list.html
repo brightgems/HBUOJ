@@ -11,7 +11,7 @@
                      data-revision-ajax="{{ url('comment_revision_ajax', node.id) }}" class="comment">
                     <a class="avatar">
                         {% with author=node.author, user=node.author.user %}
-                            <img src="{{ gravatar(author, 32) }}" class="gravatar">
+                            <img src="{{ gravatar_url(author, 32) }}" class="gravatar">
                         {% endwith %}
                     </a>
                     <div class="content">
@@ -47,7 +47,7 @@
                             <div class="comment-title"{% if not node.title or node.title.startswith('Re:') %}
                                  style="display: none"{% endif %}>{{ node.title }}</div>
                             <div class="comment-body">
-                                {{ node.body|markdown('comment', MATH_ENGINE, True)|reference|str|safe }}
+                                {{ node.body|markdown('comment', MATH_ENGINE, True)|reference|safe }}
                             </div>
                         </div>
                         <div class="actions">

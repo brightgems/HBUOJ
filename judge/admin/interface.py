@@ -1,20 +1,16 @@
-from django.conf import settings
 from django.contrib import admin
 from django.forms import ModelForm
+from django.urls import reverse_lazy
 from django.utils.html import format_html
-from django.utils.translation import ugettext_lazy as _
-from martor.widgets import AdminMartorWidget
+from django.utils.translation import gettext_lazy as _
+from django_select2.forms import HeavySelect2MultipleWidget, HeavySelect2Widget
 from mptt.admin import DraggableMPTTAdmin
 from reversion.admin import VersionAdmin
 from suit import apps
 
 from judge.dblock import LockModel
 from judge.models import NavigationBar
-from judge.widgets import HeavySelect2MultipleWidget, HeavySelect2Widget
-
-ACE_BASE_URL = getattr(settings, 'ACE_BASE_URL', '//cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/')
-HIGHLIGHT_BASE_URL = getattr(settings, 'HIGHLIGHT_BASE_URL', '//cdn.bootcss.com/highlight.js/9.12.0/')
-MATHJAX_URL = getattr(settings, 'MATHJAX_URL', '//cdn.bootcss.com/mathjax/2.7.4/MathJax.js')
+from judge.widgets import HeavyPreviewAdminPageDownWidget
 
 
 class NavigationBarAdmin(DraggableMPTTAdmin):
@@ -29,7 +25,7 @@ class NavigationBarAdmin(DraggableMPTTAdmin):
         self.__save_model_calls = 0
 
     def linked_path(self, obj):
-        return format_html(u'<a href="{0}" target="_blank">{0}</a>', obj.path)
+        return format_html('<a href="{0}" target="_blank">{0}</a>', obj.path)
 
     linked_path.short_description = _('link path')
 
@@ -55,9 +51,11 @@ class BlogPostForm(ModelForm):
     class Meta:
         widgets = {
             'authors': HeavySelect2MultipleWidget(data_view='profile_select2', attrs={'style': 'width: 100%'}),
-            'content': AdminMartorWidget,
-            'summary': AdminMartorWidget,
         }
+
+        if HeavyPreviewAdminPageDownWidget is not None:
+            widgets['content'] = HeavyPreviewAdminPageDownWidget(preview=reverse_lazy('blog_preview'))
+            widgets['summary'] = HeavyPreviewAdminPageDownWidget(preview=reverse_lazy('blog_preview'))
 
 
 class BlogPostAdmin(VersionAdmin):
@@ -75,19 +73,9 @@ class BlogPostAdmin(VersionAdmin):
 
     suit_form_size = {
         'widgets': {
-            'AdminMartorWidget': apps.SUIT_FORM_SIZE_FULL
+            'HeavyPreviewAdminPageDownWidget': apps.SUIT_FORM_SIZE_FULL
         },
     }
-
-    class Media:
-        js = (
-            ACE_BASE_URL + 'ace.js',
-            ACE_BASE_URL + 'ext-language_tools.js',
-            ACE_BASE_URL + 'mode-markdown.js',
-            ACE_BASE_URL + 'theme-github.js',
-            HIGHLIGHT_BASE_URL + 'highlight.min.js',
-            MATHJAX_URL,
-        )
 
     def has_change_permission(self, request, obj=None):
         return (request.user.has_perm('judge.edit_all_post') or
@@ -105,13 +93,16 @@ class SolutionForm(ModelForm):
         widgets = {
             'authors': HeavySelect2MultipleWidget(data_view='profile_select2', attrs={'style': 'width: 100%'}),
             'problem': HeavySelect2Widget(data_view='problem_select2', attrs={'style': 'width: 250px'}),
-            'content': AdminMartorWidget,
         }
+
+        if HeavyPreviewAdminPageDownWidget is not None:
+            widgets['content'] = HeavyPreviewAdminPageDownWidget(preview=reverse_lazy('solution_preview'))
 
 
 class LicenseForm(ModelForm):
     class Meta:
-        widgets = {'text': AdminMartorWidget}
+        if HeavyPreviewAdminPageDownWidget is not None:
+            widgets = {'text': HeavyPreviewAdminPageDownWidget(preview=reverse_lazy('license_preview'))}
 
 
 class LicenseAdmin(admin.ModelAdmin):
@@ -126,11 +117,4 @@ class LicenseAdmin(admin.ModelAdmin):
     }
 
     class Media:
-        js = (
-            ACE_BASE_URL + 'ace.js',
-            ACE_BASE_URL + 'ext-language_tools.js',
-            ACE_BASE_URL + 'mode-markdown.js',
-            ACE_BASE_URL + 'theme-github.js',
-            HIGHLIGHT_BASE_URL + 'highlight.min.js',
-            MATHJAX_URL,
-        )
+        js = ('libs/jquery-cookie.js',)

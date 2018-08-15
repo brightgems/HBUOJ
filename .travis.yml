@@ -12,16 +12,15 @@ jobs:
     - stage: test
       before_install:
         - sudo service mysql stop
-        - docker-compose up -d redis db
       install:
-        - wget -O- https://deb.nodesource.com/setup_8.x | sudo -E bash -
-        - sudo apt-get install -y git gcc g++ make python-dev libxml2-dev libxslt1-dev zlib1g-dev ruby-sass gettext curl nodejs
+        - sudo apt-get install -y git gcc g++ make python-dev libxml2-dev libxslt1-dev zlib1g-dev ruby-sass gettext nodejs npm
         - wget -q --no-check-certificate -O- https://bootstrap.pypa.io/get-pip.py | sudo python
         - npm install -g pleeease-cli
         - pip install -r requirements.txt
-      script: sh ci/test.sh
+        - pip install flake8
+      script: sh tools/init.sh
     - stage: deploy
-      script: sh ci/deploy.sh
+      script: sh tools/build.sh
 addons:
   apt:
     update: true

@@ -20,7 +20,7 @@ class HTMLTreeString(SafeData):
         try:
             return getattr(self._tree, attr)
         except AttributeError:
-            return getattr(unicode(self), attr)
+            return getattr(self, attr)
 
     def __setattr__(self, key, value):
         if key[0] == '_':
@@ -31,26 +31,23 @@ class HTMLTreeString(SafeData):
         return '<HTMLTreeString %r>' % str(self)
 
     def __str__(self):
-        return mark_safe(html.tostring(self._tree))
-
-    def __unicode__(self):
         return mark_safe(html.tostring(self._tree, encoding='unicode'))
 
     def __radd__(self, other):
         if isinstance(other, str):
-            return other + str(self)
-        return other + unicode(self)
+            return other + self
+        return other + self
 
     def __add__(self, other):
         if isinstance(other, str):
-            return str(self) + other
-        return unicode(self) + other
+            return self + other
+        return self + other
 
     def __getitem__(self, item):
-        return unicode(self)[item]
+        return self[item]
 
     def __getstate__(self):
-        return unicode(self)
+        return self
 
     def __setstate__(self, state):
         self._tree = html.fromstring(state)

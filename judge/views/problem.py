@@ -1,5 +1,3 @@
-from __future__ import division
-
 import itertools
 import logging
 import os
@@ -11,24 +9,23 @@ from random import randrange
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
-from django.core.urlresolvers import reverse
 from django.db import IntegrityError
 from django.db.models import Count, Q, F, Prefetch
 from django.db.utils import ProgrammingError
 from django.http import Http404, HttpResponseRedirect, HttpResponse, HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404
 from django.template.loader import get_template
+from django.urls import reverse
 from django.utils import translation, timezone
 from django.utils.functional import cached_property
 from django.utils.html import format_html, escape
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext as _, ugettext_lazy
+from django.utils.translation import gettext as _, gettext_lazy
 from django.views.decorators.http import require_POST
 from django.views.generic import ListView, View
 from django.views.generic.base import TemplateResponseMixin
 from django.views.generic.detail import SingleObjectMixin
 
-from django_ace.widgets import ACE_BASE_URL
 from judge.comments import CommentedDetailView
 from judge.forms import ProblemSubmitForm
 from judge.models import Problem, Submission, ContestSubmission, ContestProblem, Language, ProblemGroup, Solution, \
@@ -109,7 +106,7 @@ class ProblemSolution(SolvedProblemMixin, ProblemMixin, TitleMixin, CommentedDet
         return _('Editorial for {0}').format(self.object.name)
 
     def get_content_title(self):
-        return format_html(_(u'Editorial for <a href="{1}">{0}</a>'), self.object.name,
+        return format_html(_('Editorial for <a href="{1}">{0}</a>'), self.object.name,
                            reverse('problem_detail', args=[self.object.code]))
 
     def get_context_data(self, **kwargs):
@@ -268,7 +265,7 @@ class ProblemPdfView(ProblemMixin, SingleObjectMixin, View):
 
 class ProblemList(QueryStringSortMixin, TitleMixin, SolvedProblemMixin, ListView):
     model = Problem
-    title = ugettext_lazy('Problems')
+    title = gettext_lazy('Problems')
     context_object_name = 'problems'
     template_name = 'problem/list.html'
     paginate_by = 50
@@ -329,8 +326,8 @@ class ProblemList(QueryStringSortMixin, TitleMixin, SolvedProblemMixin, ListView
             .defer('problem__description').order_by('problem__code') \
             .annotate(user_count=Count('submission__participation', distinct=True)) \
             .order_by('order')
-        queryset = TranslatedProblemForeignKeyQuerySet.add_problem_i18n_name.im_func(queryset, 'i18n_name',
-                                                                                     self.request.LANGUAGE_CODE,
+        queryset = TranslatedProblemForeignKeyQuerySet.add_problem_i18n_name.__func__(queryset, 'i18n_name',
+                                                                                      self.request.LANGUAGE_CODE,
                                                                                      'problem__name')
         return [{
             'id': p['problem_id'],
@@ -449,7 +446,7 @@ class ProblemList(QueryStringSortMixin, TitleMixin, SolvedProblemMixin, ListView
         self.category = safe_int_or_none(request.GET.get('category'))
         if 'type' in request.GET:
             try:
-                self.selected_types = map(int, request.GET.getlist('type'))
+                self.selected_types = list(map(int, request.GET.getlist('type')))
             except ValueError:
                 pass
 
@@ -596,7 +593,7 @@ def problem_submit(request, problem=None, submission=None):
             'problem': problem_object.translated_name(request.LANGUAGE_CODE),
         },
         'content_title': mark_safe(escape(_('Submit to %(problem)s')) % {
-            'problem': format_html(u'<a href="{0}">{1}</a>',
+            'problem': format_html('<a href="{0}">{1}</a>',
                                    reverse('problem_detail', args=[problem_object.code]),
                                    problem_object.translated_name(request.LANGUAGE_CODE))
         }),
@@ -604,8 +601,6 @@ def problem_submit(request, problem=None, submission=None):
         'no_judges': not form.fields['language'].queryset,
         'submission_limit': submission_limit,
         'submissions_left': submissions_left,
-        'ACE_BASE_URL': ACE_BASE_URL,
-
         'default_lang': default_lang,
     })
 

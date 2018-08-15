@@ -6,10 +6,6 @@ from import_export.admin import ImportExportModelAdmin
 
 from judge.models import Profile, Language, Organization
 
-DEFAULT_USER_LANGUAGE = getattr(settings,
-                                'DEFAULT_USER_LANGUAGE',
-                                'CPP11')
-
 
 class UserResource(resources.ModelResource):
     name = fields.Field(attribute='profile__name')
@@ -22,7 +18,7 @@ class UserResource(resources.ModelResource):
     def init_instance(self, row=None):
         usr = super(UserResource, self).init_instance(row)
         usr.is_active = True
-        self._profile.language = Language.objects.get(key=DEFAULT_USER_LANGUAGE)
+        self._profile.language = Language.objects.get(key=settings.DEFAULT_USER_LANGUAGE)
         usr.profile = self._profile
         return usr
 

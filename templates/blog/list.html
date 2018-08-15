@@ -117,7 +117,7 @@
 
                         <div class="summary content-description">
                             {% cache 86400 'post_summary' post.id %}
-                                {{ post.summary|default(post.content, true)|markdown('blog', 'svg', lazy_load=True)|reference|str|safe }}
+                                {{ post.summary|default(post.content, true)|markdown('blog', 'svg', lazy_load=True)|reference|safe }}
                             {% endcache %}
                         </div>
                     </section>
@@ -197,7 +197,7 @@
                         {% for comment in comments %}
                             <div class="event">
                                 <div class="label">
-                                    <img src="{{ gravatar(comment.author, 32) }}">
+                                    <img src="{{ gravatar_url(comment.author, 32) }}">
                                 </div>
                                 <div class="content">
                                     {{ link_user(comment.author) }} commented on the <a
@@ -237,7 +237,7 @@
                         <div class="ui list">
                             {% for ticket in own_open_tickets %}
                                 <div class="item">
-                                    <img class="ui avatar image" src="{{ gravatar(ticket.user, 32) }}">
+                                    <img class="ui avatar image" src="{{ gravatar_url(ticket.user, 32) }}">
                                     <div class="content">
                                         <a class="header" href="{{ url('ticket', ticket.id) }}">{{ ticket.title }}</a>
                                         <div class="description">
@@ -260,7 +260,7 @@
                         <div class="ui list">
                             {% for ticket in open_tickets %}
                                 <div class="item">
-                                    <img class="ui avatar image" src="{{ gravatar(ticket.user, 32) }}">
+                                    <img class="ui avatar image" src="{{ gravatar_url(ticket.user, 32) }}">
                                     <div class="content">
                                         <a class="header" href="{{ url('ticket', ticket.id) }}">{{ ticket.title }}</a>
                                         <div class="description">

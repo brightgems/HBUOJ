@@ -1,5 +1,5 @@
-import logging
 import json
+import logging
 import struct
 
 from event_socket_server import ZlibPacketHandler
@@ -32,7 +32,7 @@ class DjangoHandler(ZlibPacketHandler):
         packet = json.loads(packet)
         try:
             result = self.handlers.get(packet.get('name', None), self.on_malformed)(packet)
-        except:
+        except Exception:
             logger.exception('Error in packet handling (Django-facing)')
             result = {'name': 'bad-request'}
         self.send(result, self._schedule_close)

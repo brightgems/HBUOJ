@@ -1,4 +1,4 @@
-from __future__ import division
+
 
 import json
 import logging
@@ -170,7 +170,7 @@ class JudgeHandler(ProxyProtocolMixin, ZlibPacketHandler):
             else:
                 handler = self.handlers.get(data['name'], self.on_malformed)
                 handler(data)
-        except:
+        except Exception:
             logger.exception('Error in packet handling (Judge-side): %s', self.name)
             self._packet_exception()
             # You can't crash here because you aren't so sure about the judges

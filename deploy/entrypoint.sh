@@ -26,7 +26,7 @@ if [[ -z $MAX_WORKER_NUM ]]; then
     if [[ $CPU_CORE_NUM -gt 4 ]]; then
         export MAX_WORKER_NUM=4
     else
-        export MAX_WORKER_NUM=$(($CPU_CORE_NUM))
+        export MAX_WORKER_NUM=$((CPU_CORE_NUM))
     fi
 fi
 
@@ -36,7 +36,7 @@ export SUPERVISOR_STARTSECS=5
 export SUPERVISOR_STARTRETRIES=10
 
 ln -sf "$SITE_BASE/deploy/supervisord.conf" /etc/supervisord.conf
-ln -sf "$SITE_BASE/deploy/local_settings.py" site/dmoj/local_settings.py
+ln -sf "$SITE_BASE/deploy/local_settings.py" site/hbuoj/local_settings.py
 ln -sf "$SITE_BASE/deploy/config.js" site/websocket/config.js
 rm /etc/nginx/sites-enabled/*
 ln -sf "$SITE_BASE/deploy/nginx.conf" /etc/nginx/site-enabled

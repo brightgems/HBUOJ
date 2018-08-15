@@ -1,13 +1,13 @@
 import logging
 import re
-from HTMLParser import HTMLParser
-from urlparse import urlparse
+from html.parser import HTMLParser
+from urllib.parse import urlparse
 
 import mistune
 from django.conf import settings
+from jinja2 import Markup
 from lxml import html
 from lxml.etree import XMLSyntaxError, ParserError
-from jinja2 import Markup
 
 from judge.highlight_code import highlight_code
 from judge.jinja2.markdown.camo import client as camo_client

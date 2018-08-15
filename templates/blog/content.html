@@ -32,9 +32,7 @@
                             {% endif %}
                         {% endwith %}
                         <span class="post-time">
-                            {% trans time=post.publish_on|date(_("N j, Y, g:i a")) %}
-                                posted on {{ time }}
-                            {% endtrans %}
+                            {% trans time=post.publish_on|date(_("N j, Y, g:i a")) %}posted on {{ time }}{% endtrans %}
                         </span>
                     </div>
                     <span class="social">
@@ -47,7 +45,7 @@
 
             <div class="body content-description">
                 {% cache 86400 'post_content' post.id MATH_ENGINE %}
-                    {{ post.content|markdown('blog', MATH_ENGINE)|reference|str|safe }}
+                    {{ post.content|markdown('blog', MATH_ENGINE)|reference|safe }}
                 {% endcache %}
             </div>
         </div>

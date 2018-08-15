@@ -62,7 +62,7 @@
 
     <div class="contest-description ui attached segment">
         {% cache 3600 'contest_html' contest.id MATH_ENGINE %}
-            {{ contest.description|markdown('contest', MATH_ENGINE)|reference|str|safe }}
+            {{ contest.description|markdown('contest', MATH_ENGINE)|reference|safe }}
         {% endcache %}
     </div>
 

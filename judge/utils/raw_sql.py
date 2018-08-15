@@ -9,7 +9,7 @@ from django.utils import six
 
 
 def unique_together_left_join(queryset, model, link_field_name, filter_field_name, filter_value, parent_model=None):
-    link_field = copy(model._meta.get_field(link_field_name).rel)
+    link_field = copy(model._meta.get_field(link_field_name).remote_field)
     filter_field = model._meta.get_field(filter_field_name)
 
     def restrictions(where_class, alias, related_alias):
@@ -40,11 +40,11 @@ def use_straight_join(queryset):
         return
 
     class Query(type(queryset.query)):
-        def join(self, join, reuse=None):
-            alias = super(Query, self).join(join, reuse)
+        def join(self, join, reuse=None, reuse_with_filtered_relation=False):
+            alias = super(Query, self).join(join, reuse, reuse_with_filtered_relation)
             join = self.alias_map[alias]
             if join.join_type == INNER:
                 join.join_type = 'STRAIGHT_JOIN'
             return alias
 
-    queryset.query = queryset.query.clone(Query)
+    queryset.query.__class__ = Query

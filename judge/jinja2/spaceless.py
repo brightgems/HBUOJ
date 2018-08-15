@@ -18,7 +18,7 @@ class SpacelessExtension(Extension):
     tags = {'spaceless'}
 
     def parse(self, parser):
-        lineno = parser.stream.next().lineno
+        lineno = parser.stream.__next__().lineno
         body = parser.parse_statements(['name:endspaceless'], drop_needle=True)
         return nodes.CallBlock(
             self.call_method('_strip_spaces', [], [], None, None),

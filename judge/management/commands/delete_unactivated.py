@@ -1,12 +1,12 @@
 from datetime import timedelta
 
 from django.conf import settings
-from django.core.management.base import NoArgsCommand
+from django.core.management.base import BaseCommand
 from django.utils import timezone
 from registration.models import RegistrationProfile
 
 
-class Command(NoArgsCommand):
+class Command(BaseCommand):
     help = 'Delete expired user registrations from the database'
 
     def handle_noargs(self, **options):

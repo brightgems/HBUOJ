@@ -1,13 +1,13 @@
 from operator import itemgetter
 
 from django.core.exceptions import ValidationError
-from django.core.urlresolvers import reverse
 from django.core.validators import MinValueValidator, RegexValidator
 from django.db import models
 from django.db.models import Max
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
-from django.utils.translation import ugettext_lazy as _, ugettext
+from django.utils.translation import gettext_lazy as _, gettext
 
 from judge.models.problem import Problem
 from judge.models.profile import Profile, Organization
@@ -24,7 +24,7 @@ class ContestTag(models.Model):
     color = models.CharField(max_length=7, verbose_name=_('tag colour'), validators=[color_validator])
     description = models.TextField(verbose_name=_('tag description'), blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def get_absolute_url(self):
@@ -146,7 +146,7 @@ class Contest(models.Model):
     def ended(self):
         return self.end_time < self._now
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def get_absolute_url(self):
@@ -177,8 +177,8 @@ class Contest(models.Model):
 
 
 class ContestParticipation(models.Model):
-    contest = models.ForeignKey(Contest, verbose_name=_('associated contest'), related_name='users')
-    user = models.ForeignKey(Profile, verbose_name=_('user'), related_name='contest_history')
+    contest = models.ForeignKey(Contest, verbose_name=_('associated contest'), related_name='users', on_delete=models.CASCADE)
+    user = models.ForeignKey(Profile, verbose_name=_('user'), related_name='contest_history', on_delete=models.CASCADE)
     real_start = models.DateTimeField(verbose_name=_('start time'), default=timezone.now, db_column='start')
     score = models.IntegerField(verbose_name=_('score'), default=0, db_index=True)
     cumtime = models.PositiveIntegerField(verbose_name=_('cumulative time'), default=0)
@@ -244,12 +244,12 @@ class ContestParticipation(models.Model):
 
     update_cumtime.alters_data = True
 
-    def __unicode__(self):
+    def __str__(self):
         if self.spectate:
-            return ugettext('%s spectating in %s') % (self.user.long_display_name, self.contest.name)
+            return gettext(f'{self.user.long_display_name} spectating in {self.contest.name}')
         if self.virtual:
-            return ugettext('%s in %s, v%d') % (self.user.long_display_name, self.contest.name, self.virtual)
-        return ugettext('%s in %s') % (self.user.long_display_name, self.contest.name)
+            return gettext(f'{self.user.long_display_name} in {self.contest.name}, {self.virtual}')
+        return gettext(f'{self.user.long_display_name} in {self.contest.name}')
 
     class Meta:
         verbose_name = _('contest participation')
@@ -259,8 +259,8 @@ class ContestParticipation(models.Model):
 
 
 class ContestProblem(models.Model):
-    problem = models.ForeignKey(Problem, verbose_name=_('problem'), related_name='contests')
-    contest = models.ForeignKey(Contest, verbose_name=_('contest'), related_name='contest_problems')
+    problem = models.ForeignKey(Problem, verbose_name=_('problem'), related_name='contests', on_delete=models.CASCADE)
+    contest = models.ForeignKey(Contest, verbose_name=_('contest'), related_name='contest_problems', on_delete=models.CASCADE)
     points = models.IntegerField(verbose_name=_('points'))
     partial = models.BooleanField(default=True, verbose_name=_('partial'))
     is_pretested = models.BooleanField(default=False, verbose_name=_('is pretested'))
@@ -278,11 +278,11 @@ class ContestProblem(models.Model):
 
 
 class ContestSubmission(models.Model):
-    submission = models.OneToOneField(Submission, verbose_name=_('submission'), related_name='contest')
+    submission = models.OneToOneField(Submission, verbose_name=_('submission'), related_name='contest', on_delete=models.CASCADE)
     problem = models.ForeignKey(ContestProblem, verbose_name=_('problem'),
-                                related_name='submissions', related_query_name='submission')
+                                related_name='submissions', related_query_name='submission', on_delete=models.CASCADE)
     participation = models.ForeignKey(ContestParticipation, verbose_name=_('participation'),
-                                      related_name='submissions', related_query_name='submission')
+                                      related_name='submissions', related_query_name='submission', on_delete=models.CASCADE)
     points = models.FloatField(default=0.0, verbose_name=_('points'))
     is_pretest = models.BooleanField(verbose_name=_('is pretested'),
                                      help_text=_('Whether this submission was ran only on pretests.'),
@@ -294,9 +294,9 @@ class ContestSubmission(models.Model):
 
 
 class Rating(models.Model):
-    user = models.ForeignKey(Profile, verbose_name=_('user'), related_name='ratings')
-    contest = models.ForeignKey(Contest, verbose_name=_('contest'), related_name='ratings')
-    participation = models.OneToOneField(ContestParticipation, verbose_name=_('participation'), related_name='rating')
+    user = models.ForeignKey(Profile, verbose_name=_('user'), related_name='ratings', on_delete=models.CASCADE)
+    contest = models.ForeignKey(Contest, verbose_name=_('contest'), related_name='ratings', on_delete=models.CASCADE)
+    participation = models.OneToOneField(ContestParticipation, verbose_name=_('participation'), related_name='rating', on_delete=models.CASCADE)
     rank = models.IntegerField(verbose_name=_('rank'))
     rating = models.IntegerField(verbose_name=_('rating'))
     volatility = models.IntegerField(verbose_name=_('volatility'))

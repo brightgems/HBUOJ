@@ -49,7 +49,7 @@
 {% block description %}
     <div class="ui segment">
         {% cache 3600 'organization_html' organization.id MATH_ENGINE %}
-            {{ organization.about|markdown('organization-about', MATH_ENGINE)|reference|str|safe }}
+            {{ organization.about|markdown('organization-about', MATH_ENGINE)|reference|safe }}
         {% endcache %}
     </div>
 {% endblock %}

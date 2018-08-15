@@ -61,7 +61,7 @@ $(function () {
             document.body.className = this[hidden] ? 'window-hidden' : 'window-visible';
 
         if ('$' in window)
-            $(window).trigger('dmoj:' + document.body.className);
+            $(window).trigger('hbuoj:' + document.body.className);
     }
 
     // set the initial state (but only if browser supports the Page Visibility API)
@@ -229,7 +229,7 @@ function register_time(elems, limit) {
             setTimeout(update, 10000);
         }
 
-        $(window).on('dmoj:window-visible', function () {
+        $(window).on('hbuoj:window-visible', function () {
             if (outdated)
                 update();
         });

@@ -1,25 +1,20 @@
 from operator import attrgetter
 
 from django import forms
-from django.conf import settings
 from django.contrib import admin
 from django.db import connection
 from django.db.models import Q
 from django.forms import ModelForm
+from django.urls import reverse_lazy
 from django.utils.html import format_html
-from django.utils.translation import ugettext, ungettext, ugettext_lazy as _
-from martor.widgets import AdminMartorWidget
+from django.utils.translation import gettext, ungettext, gettext_lazy as _
+from django_select2.forms import HeavySelect2MultipleWidget, Select2MultipleWidget, Select2Widget
 from reversion.admin import VersionAdmin
 from suit import apps
 
 from judge.models import Profile, LanguageLimit, ProblemTranslation, Problem, ProblemClarification
 from judge.models import Solution
-from judge.widgets import HeavySelect2MultipleWidget, Select2MultipleWidget, Select2Widget, \
-    CheckboxSelectMultipleWithSelectAll
-
-ACE_BASE_URL = getattr(settings, 'ACE_BASE_URL', '//cdnjs.cloudflare.com/ajax/libs/ace/1.1.3/')
-HIGHLIGHT_BASE_URL = getattr(settings, 'HIGHLIGHT_BASE_URL', '//cdn.bootcss.com/highlight.js/9.12.0/')
-MATHJAX_URL = getattr(settings, 'MATHJAX_URL', '//cdn.bootcss.com/mathjax/2.7.4/MathJax.js')
+from judge.widgets import HeavyPreviewAdminPageDownWidget, HeavyPreviewPageDownWidget, CheckboxSelectMultipleWithSelectAll
 
 
 class ProblemForm(ModelForm):
@@ -31,7 +26,7 @@ class ProblemForm(ModelForm):
         self.fields['testers'].widget.can_add_related = False
         self.fields['banned_users'].widget.can_add_related = False
         self.fields['change_message'].widget.attrs.update({
-            'placeholder': ugettext('Describe the changes you made (optional)')
+            'placeholder': gettext('Describe the changes you made (optional)')
         })
 
     class Meta:
@@ -42,8 +37,9 @@ class ProblemForm(ModelForm):
             'banned_users': HeavySelect2MultipleWidget(data_view='profile_select2', attrs={'style': 'width: 100%'}),
             'types': Select2MultipleWidget(attrs={'style': 'width: 100%'}),
             'group': Select2Widget,
-            'description': AdminMartorWidget,
         }
+        if HeavyPreviewAdminPageDownWidget is not None:
+            widgets['description'] = HeavyPreviewAdminPageDownWidget(preview=reverse_lazy('problem_preview'))
 
 
 class ProblemCreatorListFilter(admin.SimpleListFilter):
@@ -73,7 +69,8 @@ class LanguageLimitInline(admin.TabularInline):
 
 class ProblemClarificationForm(ModelForm):
     class Meta:
-        widgets = {'description': AdminMartorWidget}
+        if HeavyPreviewPageDownWidget is not None:
+            widgets = {'description': HeavyPreviewPageDownWidget(preview=reverse_lazy('comment_preview'))}
 
 
 class ProblemClarificationInline(admin.StackedInline):
@@ -82,19 +79,10 @@ class ProblemClarificationInline(admin.StackedInline):
     form = ProblemClarificationForm
     extra = 0
 
-    class Media:
-        js = (
-            ACE_BASE_URL + 'ace.js',
-            ACE_BASE_URL + 'ext-language_tools.js',
-            ACE_BASE_URL + 'mode-markdown.js',
-            ACE_BASE_URL + 'theme-github.js',
-            HIGHLIGHT_BASE_URL + 'highlight.min.js',
-            MATHJAX_URL,
-        )
-
     suit_form_size = {
         'widgets': {
-            'AdminMartorWidget': apps.SUIT_FORM_SIZE_FULL,
+            'AdminPageDownWidget': apps.SUIT_FORM_SIZE_FULL,
+            'HeavyPreviewAdminPageDownWidget': apps.SUIT_FORM_SIZE_FULL
         },
     }
 
@@ -107,8 +95,10 @@ class ProblemSolutionForm(ModelForm):
     class Meta:
         widgets = {
             'authors': HeavySelect2MultipleWidget(data_view='profile_select2', attrs={'style': 'width: 100%'}),
-            'content': AdminMartorWidget,
         }
+
+        if HeavyPreviewAdminPageDownWidget is not None:
+            widgets['content'] = HeavyPreviewAdminPageDownWidget(preview=reverse_lazy('solution_preview'))
 
 
 class ProblemSolutionInline(admin.StackedInline):
@@ -119,14 +109,16 @@ class ProblemSolutionInline(admin.StackedInline):
 
     suit_form_size = {
         'widgets': {
-            'AdminMartorWidget': apps.SUIT_FORM_SIZE_FULL,
+            'AdminPageDownWidget': apps.SUIT_FORM_SIZE_FULL,
+            'HeavyPreviewAdminPageDownWidget': apps.SUIT_FORM_SIZE_FULL
         },
     }
 
 
 class ProblemTranslationForm(ModelForm):
     class Meta:
-        widgets = {'description': AdminMartorWidget}
+        if HeavyPreviewAdminPageDownWidget is not None:
+            widgets = {'description': HeavyPreviewAdminPageDownWidget(preview=reverse_lazy('problem_preview'))}
 
 
 class ProblemTranslationInline(admin.StackedInline):
@@ -137,7 +129,8 @@ class ProblemTranslationInline(admin.StackedInline):
 
     suit_form_size = {
         'widgets': {
-            'AdminMartorWidget': apps.SUIT_FORM_SIZE_FULL,
+            'AdminPageDownWidget': apps.SUIT_FORM_SIZE_FULL,
+            'HeavyPreviewAdminPageDownWidget': apps.SUIT_FORM_SIZE_FULL
         },
     }
 
@@ -171,19 +164,13 @@ class ProblemAdmin(VersionAdmin):
 
     suit_form_size = {
         'widgets': {
-            'AdminMartorWidget': apps.SUIT_FORM_SIZE_FULL,
+            'HeavyPreviewAdminPageDownWidget': apps.SUIT_FORM_SIZE_FULL,
+            'HeavyPreviewPageDownWidget': apps.SUIT_FORM_SIZE_FULL,
         },
     }
 
     class Media:
-        js = (
-            ACE_BASE_URL + 'ace.js',
-            ACE_BASE_URL + 'ext-language_tools.js',
-            ACE_BASE_URL + 'mode-markdown.js',
-            ACE_BASE_URL + 'theme-github.js',
-            HIGHLIGHT_BASE_URL + 'highlight.min.js',
-            MATHJAX_URL,
-        )
+        js = ('libs/jquery-cookie.js',)
 
     def get_actions(self, request):
         actions = super(ProblemAdmin, self).get_actions(request)
@@ -211,7 +198,7 @@ class ProblemAdmin(VersionAdmin):
     show_authors.short_description = _('Authors')
 
     def show_public(self, obj):
-        return format_html(u'<a href="{1}">{0}</a>', ugettext('View on site'), obj.get_absolute_url())
+        return format_html('<a href="{1}">{0}</a>', gettext('View on site'), obj.get_absolute_url())
 
     show_public.short_description = ''
 

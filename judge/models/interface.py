@@ -1,10 +1,10 @@
 import re
 
 from django.core.exceptions import ValidationError
-from django.core.urlresolvers import reverse
 from django.db import models
+from django.urls import reverse
 from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from mptt.fields import TreeForeignKey
 from mptt.models import MPTTModel
 
@@ -17,7 +17,7 @@ class MiscConfig(models.Model):
     key = models.CharField(max_length=30, db_index=True)
     value = models.TextField(blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.key
 
     class Meta:
@@ -45,15 +45,17 @@ class NavigationBar(MPTTModel):
     label = models.CharField(max_length=20, verbose_name=_('label'))
     path = models.CharField(max_length=255, verbose_name=_('link path'))
     regex = models.TextField(verbose_name=_('highlight regex'), validators=[validate_regex])
-    parent = TreeForeignKey('self', verbose_name=_('parent item'), null=True, blank=True, related_name='children')
+    parent = TreeForeignKey('self', verbose_name=_('parent item'), null=True, blank=True, related_name='children', on_delete=models.CASCADE)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.label
 
     @property
-    def pattern(self, cache={}):
+    def pattern(self, cache=None):
         # A cache with a bad policy is an alias for memory leak
         # Thankfully, there will never be too many regexes to cache.
+        if cache is None:
+            cache = {}
         if self.regex in cache:
             return cache[self.regex]
         else:
@@ -72,7 +74,7 @@ class BlogPost(models.Model):
     summary = models.TextField(verbose_name=_('post summary'), blank=True)
     og_image = models.CharField(verbose_name=_('openGraph image'), default='', max_length=150, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     def get_absolute_url(self):

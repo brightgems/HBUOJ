@@ -2,11 +2,11 @@ from collections import OrderedDict, defaultdict
 from operator import attrgetter
 
 from django.core.cache import cache
-from django.core.urlresolvers import reverse
 from django.db import models
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 __all__ = ['Language', 'RuntimeVersion', 'Judge']
 
@@ -53,7 +53,7 @@ class Language(models.Model):
             runtimes[id].add(runtime.version)
 
         lang_versions = []
-        for id, version_list in runtimes.iteritems():
+        for id, version_list in runtimes.items():
             lang_versions.append((id, list(sorted(version_list, key=lambda a: tuple(map(int, a.split('.')))))))
         return lang_versions
 
@@ -65,7 +65,7 @@ class Language(models.Model):
         result = defaultdict(set)
         for id, cn in Language.objects.values_list('id', 'common_name'):
             result[cn].add(id)
-        result = {id: cns for id, cns in result.iteritems() if len(cns) > 1}
+        result = {id: cns for id, cns in result.items() if len(cns) > 1}
         cache.set('lang:cn_map', result, 86400)
         return result
 
@@ -73,7 +73,7 @@ class Language(models.Model):
     def short_display_name(self):
         return self.short_name or self.key
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @cached_property
@@ -82,11 +82,6 @@ class Language(models.Model):
             return '%s (%s)' % (self.name, self.info)
         else:
             return self.name
-
-    @classmethod
-    def get_python2(cls):
-        # We really need a default language, and this app is in Python 2
-        return Language.objects.get_or_create(key='PY2', name='Python 2')[0]
 
     def get_absolute_url(self):
         return reverse('runtime_list') + '#' + self.key
@@ -98,8 +93,8 @@ class Language(models.Model):
 
 
 class RuntimeVersion(models.Model):
-    language = models.ForeignKey(Language, verbose_name=_('language to which this runtime belongs'))
-    judge = models.ForeignKey('Judge', verbose_name=_('judge on which this runtime exists'))
+    language = models.ForeignKey(Language, verbose_name=_('language to which this runtime belongs'), on_delete=models.CASCADE)
+    judge = models.ForeignKey('Judge', verbose_name=_('judge on which this runtime exists'), on_delete=models.CASCADE)
     name = models.CharField(max_length=64, verbose_name=_('runtime name'))
     version = models.CharField(max_length=64, verbose_name=_('runtime version'), blank=True)
     priority = models.IntegerField(verbose_name=_('order in which to display this runtime'), default=0)
@@ -120,7 +115,7 @@ class Judge(models.Model):
     problems = models.ManyToManyField('Problem', verbose_name=_('problems'), related_name='judges')
     runtimes = models.ManyToManyField(Language, verbose_name=_('judges'), related_name='judges')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @cached_property
@@ -136,7 +131,7 @@ class Judge(models.Model):
                 ret[key] = {'name': data['language__name'], 'runtime': []}
             ret[key]['runtime'].append((data['name'], (data['version'],)))
 
-        return ret.items()
+        return list(ret.items())
 
     @cached_property
     def uptime(self):
@@ -148,7 +143,7 @@ class Judge(models.Model):
 
     @cached_property
     def runtime_list(self):
-        return map(attrgetter('name'), self.runtimes.all())
+        return list(map(attrgetter('name'), self.runtimes.all()))
 
     class Meta:
         ordering = ['name']

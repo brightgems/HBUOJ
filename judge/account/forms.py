@@ -2,13 +2,13 @@ from allauth.account.forms import SignupForm
 from django import forms
 from django.conf import settings
 from django.forms import CharField, ChoiceField, ModelChoiceField
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
+from django_select2.forms import Select2Widget, Select2MultipleWidget
 from sortedm2m.forms import SortedMultipleChoiceField
 
-from judge.models import Profile, Language, Organization, TIMEZONE
+from judge.models import Language, Organization, TIMEZONE
 from judge.utils.recaptcha import ReCaptchaWidget, ReCaptchaField
 from judge.utils.subscription import Subscription, newsletter_id
-from judge.widgets import Select2Widget, Select2MultipleWidget
 
 
 class MySignupForm(SignupForm):
@@ -42,10 +42,7 @@ class MySignupForm(SignupForm):
 
     def save(self, request):
         user = super(MySignupForm, self).save(request)
-        profile, _ = Profile.objects.get_or_create(user=user, defaults={
-            'language': Language.get_python2()
-        })
-
+        profile = user.profile
         profile.name = self.cleaned_data.get('display_name')
         profile.timezone = self.cleaned_data.get('timezone')
         profile.language = self.cleaned_data.get('language')

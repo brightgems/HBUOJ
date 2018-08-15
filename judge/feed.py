@@ -23,7 +23,7 @@ class ProblemFeed(Feed):
         key = 'problem_feed:%d' % problem.id
         desc = cache.get(key)
         if desc is None:
-            desc = unicode(markdown(problem.description, 'problem'))[:500] + '...'
+            desc = markdown(problem.description, 'problem')[:500] + '...'
             cache.set(key, desc, 86400)
         return desc
 
@@ -53,7 +53,7 @@ class CommentFeed(Feed):
         key = 'comment_feed:%d' % comment.id
         desc = cache.get(key)
         if desc is None:
-            desc = unicode(markdown(comment.body, 'comment'))
+            desc = markdown(comment.body, 'comment')
             cache.set(key, desc, 86400)
         return desc
 
@@ -83,7 +83,7 @@ class BlogFeed(Feed):
         key = 'blog_feed:%d' % post.id
         summary = cache.get(key)
         if summary is None:
-            summary = unicode(markdown(post.summary or post.content, 'blog'))
+            summary = markdown(post.summary or post.content, 'blog')
             cache.set(key, summary, 86400)
         return summary
 

@@ -8,7 +8,7 @@ import tempfile
 import uuid
 
 from django.conf import settings
-from django.utils.translation import ugettext
+from django.utils.translation import gettext
 
 HAS_PHANTOMJS = os.access(getattr(settings, 'PHANTOMJS', ''), os.X_OK)
 HAS_PDF = (os.path.isdir(getattr(settings, 'PROBLEM_PDF_CACHE', '')) and HAS_PHANTOMJS)
@@ -63,7 +63,7 @@ class BasePdfMaker(object):
 
 
 class PhantomJSPdfMaker(BasePdfMaker):
-    template = u'''
+    template = '''
 "use strict";
 var page = require('webpage').create();
 var param = {params};
@@ -108,7 +108,7 @@ page.open(param.input, function (status) {
             'timeout': int(getattr(settings, 'PHANTOMJS_PDF_TIMEOUT', 5.0) * 1000),
             'input': 'input.html', 'output': 'output.pdf',
             'paper': getattr(settings, 'PHANTOMJS_PAPER_SIZE', 'Letter'),
-            'footer': ugettext('Page [page] of [topage]').encode('utf-8'),
+            'footer': gettext('Page [page] of [topage]').encode('utf-8'),
         }))
 
     def make(self, debug=False):

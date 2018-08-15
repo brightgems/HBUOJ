@@ -263,7 +263,7 @@
             </a>
         {% endif %}
         {% cache 86400 'problem_html' problem.id MATH_ENGINE LANGUAGE_CODE %}
-            {{ description|markdown("problem", MATH_ENGINE)|reference|str|safe }}
+            {{ description|markdown("problem", MATH_ENGINE)|reference|safe }}
         {% endcache %}
 
         {% with license=problem.license %}

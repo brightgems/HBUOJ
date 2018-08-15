@@ -2,15 +2,16 @@ from operator import mul
 
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
 from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models import Max
+from django.urls import reverse
 from django.utils.functional import cached_property
 from django.utils.timezone import now
-from django.utils.translation import ugettext_lazy as _, pgettext
+from django.utils.translation import gettext_lazy as _, pgettext
 from sortedm2m.fields import SortedManyToManyField
 
+from judge.models.runtime import Language
 from judge.models.choices import TIMEZONE, ACE_THEMES, MATH_ENGINES_CHOICES
 from judge.ratings import rating_class
 
@@ -28,7 +29,7 @@ class Organization(models.Model):
     about = models.TextField(verbose_name=_('organization description'))
     registrant = models.ForeignKey('Profile', verbose_name=_('registrant'),
                                    related_name='registrant+',
-                                   help_text=_('User who registered this organization'))
+                                   help_text=_('User who registered this organization'), on_delete=models.CASCADE)
     admins = models.ManyToManyField('Profile', verbose_name=_('administrators'), related_name='+',
                                     help_text=_('Those who can edit this organization'))
     creation_date = models.DateTimeField(verbose_name=_('creation date'), auto_now_add=True)
@@ -41,14 +42,14 @@ class Organization(models.Model):
                                    verbose_name=_('access code'), null=True, blank=True)
 
     def __contains__(self, item):
-        if isinstance(item, (int, long)):
+        if isinstance(item, int):
             return self.members.filter(id=item).exists()
         elif isinstance(item, Profile):
             return self.members.filter(id=item.id).exists()
         else:
             raise TypeError('Organization membership test must be Profile or primany key')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def get_absolute_url(self):
@@ -65,12 +66,12 @@ class Organization(models.Model):
 
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, verbose_name=_('user associated'))
+    user = models.OneToOneField(User, verbose_name=_('user associated'), on_delete=models.CASCADE, auto_created=True)
     name = models.CharField(max_length=50, verbose_name=_('display name'), null=True, blank=True)
     about = models.TextField(verbose_name=_('self-description'), null=True, blank=True)
     timezone = models.CharField(max_length=50, verbose_name=_('location'), choices=TIMEZONE,
-                                default=getattr(settings, 'DEFAULT_USER_TIME_ZONE', 'America/Toronto'))
-    language = models.ForeignKey('Language', verbose_name=_('preferred language'))
+                                default=getattr(settings, 'DEFAULT_USER_TIME_ZONE', 'Asia/Shanghai'))
+    language = models.ForeignKey('Language', verbose_name=_('preferred language'), on_delete=models.SET_NULL, null=True)
     points = models.FloatField(default=0, db_index=True)
     performance_points = models.FloatField(default=0, db_index=True)
     problem_count = models.IntegerField(default=0, db_index=True)
@@ -98,7 +99,7 @@ class Profile(models.Model):
         orgs = self.organizations.all()
         return orgs[0] if orgs else None
 
-    def calculate_points(self, table=(lambda x: [pow(x, i) for i in xrange(100)])(getattr(settings, 'PP_STEP', 0.95))):
+    def calculate_points(self, table=(lambda x: [pow(x, i) for i in range(100)])(getattr(settings, 'PP_STEP', 0.95))):
         from judge.models import Problem
         data = (Problem.objects.filter(submission__user=self, submission__points__isnull=False, is_public=True)
                 .annotate(max_points=Max('submission__points')).order_by('-max_points')
@@ -148,7 +149,7 @@ class Profile(models.Model):
     def get_absolute_url(self):
         return reverse('user_page', args=(self.user.username,))
 
-    def __unicode__(self):
+    def __str__(self):
         return self.user.username
 
     @classmethod
@@ -170,8 +171,8 @@ class Profile(models.Model):
 
 
 class OrganizationRequest(models.Model):
-    user = models.ForeignKey(Profile, verbose_name=_('user'), related_name='requests')
-    organization = models.ForeignKey(Organization, verbose_name=_('organization'), related_name='requests')
+    user = models.ForeignKey(Profile, verbose_name=_('user'), related_name='requests', on_delete=models.CASCADE)
+    organization = models.ForeignKey(Organization, verbose_name=_('organization'), related_name='requests', on_delete=models.CASCADE)
     time = models.DateTimeField(verbose_name=_('request time'), auto_now_add=True)
     state = models.CharField(max_length=1, verbose_name=_('state'), choices=(
         ('P', 'Pending'),

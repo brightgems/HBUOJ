@@ -105,11 +105,7 @@ venv.bak/
 
 .idea
 .sass-cache
-*.sqlite3
-*.py[co]
-*.mo
 *~
-dmoj/local_settings.py
 resources/style.css
 resources/content-description.css
 resources/ranks.css

@@ -1,6 +1,5 @@
 from django.apps import AppConfig
-from django.db import DatabaseError
-from django.utils.translation import ugettext_lazy
+from django.utils.translation import gettext_lazy
 from suit import apps
 from suit.apps import DjangoSuitConfig
 from suit.menu import ParentItem, ChildItem
@@ -8,7 +7,7 @@ from suit.menu import ParentItem, ChildItem
 
 class JudgeAppConfig(AppConfig):
     name = 'judge'
-    verbose_name = ugettext_lazy('HBU Online Judge')
+    verbose_name = gettext_lazy('HBU Online Judge')
 
     def ready(self):
         # WARNING: AS THIS IS NOT A FUNCTIONAL PROGRAMMING LANGUAGE,
@@ -21,7 +20,7 @@ class JudgeAppConfig(AppConfig):
         from django.contrib.flatpages.admin import FlatPageAdmin
         from django.contrib import admin
         from django.contrib.auth.models import User
-        from admin.user import MyUserAdmin
+        from .admin.user import MyUserAdmin
         from reversion.admin import VersionAdmin
 
         class FlatPageVersionAdmin(VersionAdmin, FlatPageAdmin):
@@ -35,16 +34,6 @@ class JudgeAppConfig(AppConfig):
         admin.site.register(FlatPage, FlatPageVersionAdmin)
         admin.site.unregister(User)
         admin.site.register(User, MyUserAdmin)
-        from judge.models import Language, Profile
-
-        try:
-            lang = Language.get_python2()
-            for user in User.objects.filter(profile=None):
-                # These poor profileless users
-                profile = Profile(user=user, language=lang)
-                profile.save()
-        except DatabaseError:
-            pass
 
 
 class SuitConfig(DjangoSuitConfig):

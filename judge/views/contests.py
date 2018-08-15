@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist, ImproperlyConfigured
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import connection, IntegrityError
 from django.db.models import Q, Min, Max, Sum, Case, When, IntegerField
 from django.http import HttpResponseRedirect, HttpResponseBadRequest, Http404, HttpResponse
@@ -19,7 +19,7 @@ from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.html import escape, format_html
 from django.utils.timezone import make_aware
-from django.utils.translation import ugettext as _, ugettext_lazy
+from django.utils.translation import gettext as _, gettext_lazy
 from django.views.generic import ListView, TemplateView
 from django.views.generic.detail import BaseDetailView, DetailView
 
@@ -69,7 +69,7 @@ class ContestListMixin(object):
 class ContestList(TitleMixin, ContestListMixin, ListView):
     model = Contest
     template_name = 'contest/list.html'
-    title = ugettext_lazy('Contests')
+    title = gettext_lazy('Contests')
 
     def get_queryset(self):
         return super(ContestList, self).get_queryset() \
@@ -319,7 +319,7 @@ class ContestCalendar(TitleMixin, ContestListMixin, TemplateView):
     firstweekday = MONDAY
     weekday_classes = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
     template_name = 'contest/calendar.html'
-    title = ugettext_lazy('Contests')
+    title = gettext_lazy('Contests')
 
     def get(self, request, *args, **kwargs):
         try:
@@ -338,7 +338,7 @@ class ContestCalendar(TitleMixin, ContestListMixin, TemplateView):
         end += timedelta(days=1)
         contests = self.get_queryset().filter(Q(start_time__gte=start, start_time__lt=end) |
                                               Q(end_time__gte=start, end_time__lt=end)).defer('description')
-        starts, ends, oneday = (defaultdict(list) for i in xrange(3))
+        starts, ends, oneday = (defaultdict(list) for i in range(3))
         for contest in contests:
             start_date = timezone.localtime(contest.start_time).date()
             end_date = timezone.localtime(contest.end_time).date()
@@ -367,8 +367,12 @@ class ContestCalendar(TitleMixin, ContestListMixin, TemplateView):
             raise Http404()
 
         dates = Contest.objects.aggregate(min=Min('start_time'), max=Max('end_time'))
-        min_month = dates['min'].year, dates['min'].month
-        max_month = max((dates['max'].year, dates['max'].month), (self.today.year, self.today.month))
+        min_month = (self.today.year, self.today.month)
+        if dates['min'] is not None:
+            min_month = dates['min'].year, dates['min'].month
+        max_month = (self.today.year, self.today.month)
+        if dates['max'] is not None:
+            max_month = max((dates['max'].year, dates['max'].month), (self.today.year, self.today.month))
 
         month = (self.year, self.month)
         if month < min_month or month > max_month:
@@ -454,7 +458,7 @@ def base_contest_ranking_list(contest, problems, queryset, for_user=None):
     data = {(part, prob): (code, best, last and from_database_time(last)) for part, prob, code, best, last in cursor}
     cursor.close()
 
-    problems = map(attrgetter('id', 'points', 'is_pretested'), problems)
+    problems = list(map(attrgetter('id', 'points', 'is_pretested'), problems))
 
     def make_ranking_profile(participation):
         part = participation.id
@@ -466,8 +470,8 @@ def base_contest_ranking_list(contest, problems, queryset, for_user=None):
             if (part, prob) in data and data[part, prob][1] is not None else None
             for prob, points, is_pretested in problems])
 
-    return map(make_ranking_profile, queryset.select_related('user__user', 'rating')
-               .defer('user__about', 'user__organizations__about'))
+    return list(map(make_ranking_profile, queryset.select_related('user__user', 'rating')
+                    .defer('user__about', 'user__organizations__about')))
 
 
 def contest_ranking_list(contest, problems):
@@ -584,7 +588,7 @@ def base_participation_list(request, contest, profile):
     prof_username = profile.user.username
 
     queryset = contest.users.filter(user=profile, virtual__gte=0).order_by('-virtual')
-    live_link = format_html(u'<a href="{2}#!{1}">{0}</a>', _('Live'), prof_username,
+    live_link = format_html('<a href="{2}#!{1}">{0}</a>', _('Live'), prof_username,
                             reverse('contest_ranking', args=[contest.key]))
     users, problems = get_contest_ranking_list(
         request, contest, show_current_virtual=False,
@@ -592,8 +596,8 @@ def base_participation_list(request, contest, profile):
         ranker=lambda users, key: ((user.participation.virtual or live_link, user) for user in users))
     return render(request, 'contest/ranking.html', {
         'users': users,
-        'title': _('Your participation in %s') % contest.name if req_username == prof_username else
-        _("%s's participation in %s") % (prof_username, contest.name),
+        'title': _(f'Your participation in {contest.name}') if req_username == prof_username else
+        _(f"{prof_username}'s participation in {contest.name}"),
         'content_title': contest.name,
         # 'subtitle': _('Your participation') if req_username == prof_username else _(
         #    "%s's participation") % prof_username,

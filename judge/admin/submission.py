@@ -9,10 +9,10 @@ from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.utils.html import format_html
-from django.utils.translation import ugettext_lazy as _, pgettext, ugettext, ungettext
+from django.utils.translation import gettext_lazy as _, pgettext, gettext, ungettext
+from django_ace import AceWidget
 from suit import apps
 
-from django_ace import AceWidget
 from judge.models import Submission, SubmissionTestCase, ContestSubmission, ContestParticipation, ContestProblem, \
     Profile
 
@@ -105,6 +105,7 @@ class SubmissionAdmin(admin.ModelAdmin):
     inlines = [SubmissionTestCaseInline, ContestSubmissionInline]
     suit_form_size = {
         'widgets': {
+            'HeavyPreviewAdminPageDownWidget': apps.SUIT_FORM_SIZE_FULL,
             'AceWidget': apps.SUIT_FORM_SIZE_FULL,
         },
     }
@@ -134,12 +135,12 @@ class SubmissionAdmin(admin.ModelAdmin):
 
     def judge(self, request, queryset):
         if not request.user.has_perm('judge.rejudge_submission') or not request.user.has_perm('judge.edit_own_problem'):
-            self.message_user(request, ugettext('You do not have the permission to rejudge submissions.'),
+            self.message_user(request, gettext('You do not have the permission to rejudge submissions.'),
                               level=messages.ERROR)
             return
         queryset = queryset.order_by('id')
         if queryset.count() > 10 and not request.user.has_perm('judge.rejudge_submission_lot'):
-            self.message_user(request, ugettext('You do not have the permission to rejudge THAT many submissions.'),
+            self.message_user(request, gettext('You do not have the permission to rejudge THAT many submissions.'),
                               level=messages.ERROR)
             return
         if not request.user.has_perm('judge.edit_all_problem'):
@@ -156,7 +157,7 @@ class SubmissionAdmin(admin.ModelAdmin):
 
     def recalculate_score(self, request, queryset):
         if not request.user.has_perm('judge.rejudge_submission'):
-            self.message_user(request, ugettext('You do not have the permission to rejudge submissions.'),
+            self.message_user(request, gettext('You do not have the permission to rejudge submissions.'),
                               level=messages.ERROR)
             return
         submissions = list(queryset.select_related('problem').only('points', 'case_points', 'case_total',
@@ -204,7 +205,7 @@ class SubmissionAdmin(admin.ModelAdmin):
     problem_name.admin_order_field = 'problem__name'
 
     def user_column(self, obj):
-        return format_html(u'<span title="{display}">{username}</span>',
+        return format_html('<span title="{display}">{username}</span>',
                            username=obj.user.user.username,
                            display=obj.user.name)
 
@@ -220,11 +221,11 @@ class SubmissionAdmin(admin.ModelAdmin):
     def pretty_memory(self, obj):
         memory = obj.memory
         if memory is None:
-            return ugettext('None')
+            return gettext('None')
         if memory < 1000:
-            return ugettext('%d KB') % memory
+            return gettext('%d KB') % memory
         else:
-            return ugettext('%.2f MB') % (memory / 1024.)
+            return gettext('%.2f MB') % (memory / 1024.)
 
     pretty_memory.admin_order_field = 'memory'
     pretty_memory.short_description = _('Memory')

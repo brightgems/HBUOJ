@@ -1,8 +1,7 @@
-from __future__ import absolute_import
-
 import datetime
 
 from django.utils.translation import npgettext, pgettext, ungettext
+
 from . import registry
 
 

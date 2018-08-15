@@ -6,13 +6,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.cache import cache
 from django.core.cache.utils import make_template_fragment_key
 from django.core.exceptions import PermissionDenied
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import transaction
 from django.db.models import Count, Max
 from django.forms import Form, modelformset_factory
 from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404
-from django.utils.translation import ugettext as _, ugettext_lazy, ungettext
+from django.utils.translation import gettext as _, gettext_lazy, ungettext
 from django.views.generic import DetailView, ListView, View, UpdateView, FormView
 from django.views.generic.detail import SingleObjectMixin, SingleObjectTemplateResponseMixin
 from reversion import revisions
@@ -59,7 +59,7 @@ class OrganizationList(TitleMixin, ListView):
     model = Organization
     context_object_name = 'organizations'
     template_name = 'organization/list.html'
-    title = ugettext_lazy('Organizations')
+    title = gettext_lazy('Organizations')
 
     def get_queryset(self):
         return super(OrganizationList, self).get_queryset().annotate(member_count=Count('member'))
@@ -161,7 +161,7 @@ class RequestJoinOrganization(LoginRequiredMixin, SingleObjectMixin, FormView):
 class OrganizationRequestDetail(LoginRequiredMixin, TitleMixin, DetailView):
     model = OrganizationRequest
     template_name = 'organization/requests/detail.html'
-    title = ugettext_lazy('Join request detail')
+    title = gettext_lazy('Join request detail')
 
     def get_object(self, queryset=None):
         object = super(OrganizationRequestDetail, self).get_object(queryset)
@@ -221,8 +221,8 @@ class OrganizationRequestView(OrganizationRequestBaseView):
                 to_approve = sum(form.cleaned_data['state'] == 'A' for form in formset.forms if form not in deleted_set)
                 can_add = organization.slots - organization.members.count()
                 if to_approve > can_add:
-                    messages.error(request, _('Your organization can only receive %d more members. '
-                                              'You cannot approve %d users.') % (can_add, to_approve))
+                    messages.error(request, _(f'Your organization can only receive {can_add} more members. '
+                                              f'You cannot approve {to_approve} users.'))
                     return self.render_to_response(self.get_context_data(object=organization))
 
             approved, rejected = 0, 0

@@ -2,30 +2,30 @@ import itertools
 import json
 
 from django.utils.http import urlquote
+from django_gravatar.templatetags.gravatar import gravatar_url
 from jinja2.ext import Extension
 from mptt.utils import get_cached_trees
 from statici18n.templatetags.statici18n import inlinei18n
 
 from judge.highlight_code import highlight_code
-from judge.user_translations import ugettext
-from . import (datetime, filesize, gravatar, language, markdown, rating, reference, render, social, spaceless,
+from judge.user_translations import gettext
+from . import (datetime, filesize, language, markdown, rating, reference, render, social, spaceless,
                submission, timedelta)
 from . import registry
 
-registry.function('str', unicode)
-registry.filter('str', unicode)
 registry.filter('json', json.dumps)
 registry.filter('highlight', highlight_code)
 registry.filter('urlquote', urlquote)
 registry.filter('roundfloat', round)
 registry.function('inlinei18n', inlinei18n)
 registry.function('mptt_tree', get_cached_trees)
-registry.function('user_trans', ugettext)
+registry.function('user_trans', gettext)
+registry.function('gravatar_url', gravatar_url)
 
 
 @registry.function
 def counter(start=1):
-    return itertools.count(start).next
+    return itertools.count(start).__next__
 
 
 class DMOJExtension(Extension):
