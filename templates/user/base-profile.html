@@ -9,8 +9,13 @@
     {% block user_js_media %}{% endblock %}
 {% endblock %}
 
+{% block h2_row %}<h2 class="ui header" style="margin-bottom: .5em;margin-left: 76.5%;margin-top: 1.5em;">{% endblock %}
+
 {% block body %}
     <div class="ui grid">
+        <div class="twelve wide stretched column">
+            {% block user_content %}{% endblock %}
+        </div>
         <div class="four wide column">
             <div class="ui vertical fluid menu">
                 <a class="{% if tab == 'profile' %}active teal {% endif %}item"
@@ -24,9 +29,6 @@
                     {{ _('Change Password') }}
                 </a>
             </div>
-        </div>
-        <div class="twelve wide stretched column">
-            {% block user_content %}{% endblock %}
         </div>
     </div>
 {% endblock %}
