@@ -209,7 +209,7 @@
 <body>
 {% if not no_judges %}
     {% if default_lang not in form.fields.language.queryset %}
-        <div class="alert alert-warning alert-dismissable">
+        <div class="ui negative message">
             <a class="close">x</a>
             {% trans trimmed default_language=default_lang.name %}
                 <b>Warning!</b> Your default language, <b>{{ default_language }}</b>,
@@ -220,7 +220,7 @@
 
     {% if request.in_contest and submission_limit %}
         {% if submissions_left > 0 %}
-            <div class="alert alert-warning alert-dismissable">
+            <div class="ui negative message">
                 <a class="close">x</a>
                 {% trans left=submissions_left %}
                     You have {{ left }} submission left
@@ -229,7 +229,7 @@
                 {% endtrans %}
             </div>
         {% else %}
-            <div class="alert alert-warning alert-dismissable">
+            <div class="ui negative message">
                 <a class="close">x</a>
                 {{ _('You have 0 submissions left') }}
             </div>

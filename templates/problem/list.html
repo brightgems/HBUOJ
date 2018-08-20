@@ -258,9 +258,9 @@
                                 <td solved="1">
                                     <a href="{{ url('user_submissions', problem.code, request.user.username) }}">
                                         {% if problem.is_public or request.in_contest %}
-                                            <i class="solved-problem-color fa fa-check-circle"></i>
+                                            <i class="ui solved-problem-color fa fa-check-circle"></i>
                                         {% else %}
-                                            <i class="solved-problem-color fa fa-lock"></i>
+                                            <i class="ui solved-problem-color fa fa-lock"></i>
                                         {% endif %}
                                     </a>
                                 </td>
@@ -268,18 +268,18 @@
                                 <td solved="0">
                                     <a href="{{ url('user_submissions', problem.code, request.user.username) }}">
                                         {% if problem.is_public or request.in_contest %}
-                                            <i class="attempted-problem-color fa fa-minus-circle"></i>
+                                            <i class="ui attempted-problem-color fa fa-minus-circle"></i>
                                         {% else %}
-                                            <i class="attempted-problem-color fa fa-lock"></i>
+                                            <i class="ui attempted-problem-color fa fa-lock"></i>
                                         {% endif %}
                                     </a>
                                 </td>
                             {% else %}
                                 <td solved="-1">
                                     {% if problem.is_public or request.in_contest %}
-                                        <i class="unsolved-problem-color fa fa-minus-circle"></i>
+                                        <i class="ui unsolved-problem-color fa fa-minus-circle"></i>
                                     {% else %}
-                                        <i class="unsolved-problem-color fa fa-lock"></i>
+                                        <i class="ui unsolved-problem-color fa fa-lock"></i>
                                     {% endif %}
                                 </td>
                             {% endif %}
