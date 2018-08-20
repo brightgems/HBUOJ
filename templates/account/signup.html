@@ -4,8 +4,15 @@
     {% include "timezone/media-css.html" %}
     {{ form.media.css }}
     <style>
+
         .sortedm2m-container, .sortedm2m-container p.selector-filter {
             width: 300px;
+        }
+
+        #signup-panel {
+            position: relative;
+            max-width: 450px;
+            margin: 20vh auto;
         }
 
         .sortedm2m-container p.selector-filter input {
@@ -117,7 +124,8 @@
 {% endblock %}
 
 {% block body %}
-    <form id="edit-form" action="" method="post" class="ui clearing fluid segment">
+    <div id="signup-panel" style="margin-top: 25px">
+        <form id="edit-form" action="" method="post" class="ui clearing fluid segment">
         {% csrf_token %}
         <div class="ui form">
             <div class="block-header">{{ _('Username') }}</div>
@@ -160,43 +168,44 @@
             {% if form.display_name.errors %}
                 <div class="form-field-error">{{ form.display_name.errors }}</div>
             {% endif %}
-        </div>
-        <div class="block-header">{{ _('Timezone') }}
-            <small>{{ _('(select your closest major city)') }}</small>
-        </div>
-        <div class="fullwidth">
-            <div>
-                {{ form.timezone }}
             </div>
-        </div>
-        <div class="block-header">{{ _('Default language') }}</div>
-        <span class="fullwidth">{{ form.language }}</span>
-
-        <div class="block-header">{{ _('Affiliated organizations') }}</div>
-        {{ form.organizations }}
-
-        {% if form.newsletter %}
-            <div style="padding-top: 0.5em;">{{ form.newsletter }}
-                <label for="id_newsletter" style="float: unset;"
-                       class="inline-header grayed">{{ _('Notify me about upcoming contests') }}</label>
+            <div class="block-header">{{ _('Timezone') }}
+                <small>{{ _('(select your closest major city)') }}</small>
             </div>
-        {% endif %}
+            <div class="fullwidth">
+                <div>
+                    {{ form.timezone }}
+                </div>
+            </div>
+            <div class="block-header">{{ _('Default language') }}</div>
+            <span class="fullwidth">{{ form.language }}</span>
 
-        {% if form.captcha %}
-            <div style="margin-top: 0.5em">{{ form.captcha }}</div>
-            {% if form.captcha.errors %}
-                <div class="form-field-error">{{ form.captcha.errors }}</div>
+            <div class="block-header">{{ _('Affiliated organizations') }}</div>
+            {{ form.organizations }}
+
+            {% if form.newsletter %}
+                <div style="padding-top: 0.5em;">{{ form.newsletter }}
+                    <label for="id_newsletter" style="float: unset;"
+                           class="inline-header grayed">{{ _('Notify me about upcoming contests') }}</label>
+                </div>
             {% endif %}
-        {% endif %}
-        {% if tos_url %}
-            <span class="tos-section">
-                    {{ _('By registering, you agree to our') }}
-                    <a href="{{ tos_url }}">{{ _('Terms & Conditions') }}</a>.
-                </span>
-        {% endif %}
-        <hr>
-        <button class="ui right floated button" type="submit">{{ _('Register!') }}</button>
-    </form>
+
+            {% if form.captcha %}
+                <div style="margin-top: 0.5em">{{ form.captcha }}</div>
+                {% if form.captcha.errors %}
+                    <div class="form-field-error">{{ form.captcha.errors }}</div>
+                {% endif %}
+            {% endif %}
+            {% if tos_url %}
+                <span class="tos-section">
+                        {{ _('By registering, you agree to our') }}
+                        <a href="{{ tos_url }}">{{ _('Terms & Conditions') }}</a>.
+                    </span>
+            {% endif %}
+            <hr>
+            <button class="ui left floated button" type="submit">{{ _('Register!') }}</button>
+        </form>
+    </div>
 
     <div class="map-wrap">
         <div class="map-inset">

@@ -28,7 +28,7 @@
 {% endblock %}
 
 {% block body %}
-    <div id="login-panel">
+    <div id="login-panel" style="margin-bottom: 20%">
         <div class="ui top attached message"><i class="user circle icon"></i>{{ _('统一认证') }}</div>
         <form action="{{ url('account_login') }}" method="POST" class="ui form attached fluid segment">
             {% csrf_token %}
