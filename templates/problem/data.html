@@ -359,6 +359,7 @@
         {% csrf_token %}
         {{ cases_formset.management_form }}
         {{ data_form.as_p() }}
+        {#这一段不知作用#}
         <div class="inline fields" id="column-visible" data-problem="{{ problem.code }}">
             <strong>{{ _('Show columns:') }}</strong>
             <label>

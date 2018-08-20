@@ -4,17 +4,17 @@
         {% if problem.id in completed_problem_ids %}
             <a href="{{ url('user_submissions', problem.code, request.user.username) }}">
                 {% if problem.is_public or request.in_contest %}
-                    <i class="solved-problem-color title-state fa fa-check-circle"></i>
+                    <i class="ui solved-problem-color title-state fa fa-check-circle"></i>
                 {% else %}
-                    <i class="solved-problem-color title-state fa fa-lock"></i>
+                    <i class="ui solved-problem-color title-state fa fa-lock"></i>
                 {% endif %}
             </a>
         {% elif problem.id in attempted_problems %}
             <a href="{{ url('user_submissions', problem.code, request.user.username) }}">
                 {% if problem.is_public or request.in_contest %}
-                    <i class="attempted-problem-color title-state fa fa-minus-circle"></i>
+                    <i class="ui attempted-problem-color title-state fa fa-minus-circle"></i>
                 {% else %}
-                    <i class="attempted-problem-color title-state fa fa-lock"></i>
+                    <i class="ui attempted-problem-color title-state fa fa-lock"></i>
                 {% endif %}
             </a>
         {% endif %}
@@ -90,7 +90,7 @@
             <div class="header">{{ _('详情') }}</div>
             <div class="ui list">
                 <div class="item problem-info-entry">
-                    <i class="fa fa-check fa-fw"></i><span class="pi-name">{{ _('Points:') }}</span>
+                    <i class="ui fa fa-check fa-fw"></i><span class="pi-name">{{ _('Points:') }}</span>
                     <span class="pi-value">
             {% if contest_problem %}
                 {{ contest_problem.points }}{% if contest_problem.partial %} {{ _('(partial)') }}{% endif %}
@@ -100,7 +100,7 @@
                 </span>
                 </div>
                 <div class="item problem-info-entry">
-                    <i class="fa fa-clock-o fa-fw"></i><span class="pi-name">{{ _('Time limit:') }}</span>
+                    <i class="ui fa fa-clock-o fa-fw"></i><span class="pi-name">{{ _('Time limit:') }}</span>
                     <span class="pi-value">{{ problem.time_limit }}s</span>
                 </div>
                 <div class="item problem-lang-limits">
