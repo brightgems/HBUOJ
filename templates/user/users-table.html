@@ -3,7 +3,7 @@
 {% block after_rank_head %}
     <th class="header rank">
         {% if sort_links %}<a href="{{ sort_links.rating }}">{% endif %}
-        <span class="fa fa-star"></span>
+        <span class="ui fa fa-star"></span>
         {%- if sort_links %}{{ sort_order.rating }}</a>{% endif %}
     </th>
 {% endblock %}
