@@ -184,6 +184,47 @@
     </noscript>
 </head>
 <body>
+{#
+<div class="ui fixed inverted menu" id="navigation">
+    <a id="navicon" href="url('home')"><i class="fa fa-bars"></i></a>
+    <a href="{{ url('home') }}">{% include "site-logo-fragment.html" %}</a>
+    <a href="{{ url('home') }}" class="item">{{ _('Home') }}</a>
+    <a href="{{ url('problem_list') }}" class="item">{{ _('problems') }}</a>
+    <a href="#" class="item">{{ _('submissions') }}</a>
+    <a href="{{ url('contest_list') }}" class="item">{{ _('contests') }}</a>
+    <div class="ui dropdown item">
+        <a href="{{ url('user_list') }}">
+            {{ _('users') }}
+        </a>
+        #}{# 下拉菜单存在问题 #}{#
+        #}{#<div class="menu">
+            #}{##}{# rank页面在无比赛时没用 #}{##}{#
+            <a href="#" class="item">
+                {{ _('rank') }}
+            </a>
+            <a href="url('organization_list')" class="item">
+                {{ _('organizations') }}
+            </a>
+        </div>#}{#
+    </div>
+    <div class="ui dropdown item">
+        <a href="about">
+            {{ _('about') }}
+        </a>
+        #}{# 下拉菜单存在问题 #}{#
+        #}{#<div class="menu">
+            #}{##}{# rank页面在无比赛时没用 #}{##}{#
+            <a href="url('status_all')" class="item">
+                {{ _('status') }}
+            </a>
+            <a href="url('runtime_list')" class="item">
+                {{ _('runtimes') }}
+            </a>
+        </div>#}{#
+    </div>
+</div>#}
+{#
+
 <nav id="navigation" class="unselectable">
     <div id="nav-container">
         <a id="navicon" href="javascript:void(0)"><i class="fa fa-bars"></i></a>
@@ -213,7 +254,9 @@
                     <li>
                         <a href="{{ url('user_page') }}">
                             <span>
-                                <img src="{{ gravatar(request.user, 32) }}" height="24" width="24">{# -#}
+                                <img src="{{ gravatar(request.user, 32) }}" height="24" width="24">
+ -
+
                                 <span>
                                     {%- trans username=request.user.username -%}
                                         Hello, <b>{{ username }}</b>.
@@ -251,6 +294,8 @@
     </div>
     <div id="nav-shadow"></div>
 </nav>
+#}
+
 {% if request.in_contest %}
     <div id="contest-info">
         <a href="{{ url('contest_view', request.participation.contest.key) }}" style="vertical-align: middle;">
