@@ -250,6 +250,7 @@ urlpatterns = [
     ])),
 
     url(r'^cas/', include('mama_cas.urls')),
+
 ]
 
 favicon_paths = ['apple-touch-icon-180x180.png', 'apple-touch-icon-114x114.png', 'android-chrome-72x72.png',

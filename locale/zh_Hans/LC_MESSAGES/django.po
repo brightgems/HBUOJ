@@ -3133,6 +3133,10 @@ msgstr "题目搜索"
 msgid "Search problems..."
 msgstr "搜索题目…"
 
+#: .\templates\problem\search-form.html
+msgid "Search problems"
+msgstr "题目名称"
+
 #: .\templates\problem\search-form.html:14
 msgid "Full text search"
 msgstr "全文搜索"

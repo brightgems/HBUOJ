@@ -3,9 +3,14 @@
   "version": "1.0.0",
   "description": "HBU Online Judge ===== [![Python](https://img.shields.io/badge/python-2.7-blue.svg)](https://www.python.org/downloads/release/python-362/) [![Django](https://img.shields.io/badge/django-1.11-blue.svg)](https://www.djangoproject.com/) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/b881b108692a4e268c597ebf45edc3cf)](https://www.codacy.com/app/xingji2163/HBUOJ?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=HBUCS/HBUOJ&amp;utm_campaign=Badge_Grade) [![Build Status](https://travis-ci.org/HBUCS/HBUOJ.svg?branch=master)](https://travis-ci.org/HBUCS/HBUOJ)",
   "main": "index.js",
-  "dependencies": {},
+  "dependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.5",
+    "babel-preset-es2015": "^6.24.1",
+    "webpack-bundle-tracker": "^0.3.0"
+  },
   "devDependencies": {
-    "webpack": "^4.16.5"
+    "webpack": "^4.17.1"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

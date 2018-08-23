@@ -129,10 +129,10 @@
                             <td>
                                 {% if request.user.profile in contest.organizers.all() %}
                                     <a href="{{ url('contest_join', contest.key) }}"
-                                       class="unselectable button full participate-button">{{ _('Spectate') }}</a>
+                                       class="ui full blue button">{{ _('Spectate') }}</a>
                                 {% else %}
                                     <a href="{{ url('contest_join', contest.key) }}"
-                                       class="unselectable button full participate-button join-warning">
+                                       class="ui full blue button">
                                         {{- _('Join') -}}
                                     </a>
                                 {% endif %}
@@ -206,7 +206,7 @@
                     </td>
                     {% if not request.in_contest %}
                         <td><a href="{{ url('contest_join', contest.key) }}"
-                               class="unselectable button full participate-button">{{ _('Virtual join') }}</a>
+                               class="ui full blue button">{{ _('Virtual join') }}</a>
                         </td>
                     {% endif %}
                 </tr>

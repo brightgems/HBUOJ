@@ -1,35 +1,36 @@
 <div class="sidebox">
     <h4 class="ui dividing header">&nbsp;{{ _('Problem search') }}
-        <i class="ui fa fa-search"></i>
+        <i class="ui search icon"></i>
     </h4>
     <div class="ui segment">
         <form id="filter-form" name="form" action="" method="get">
-            <div>
-                <input id="search" class="ui prompt" type="text" name="search" value="{{ search_query or '' }}"
+            <label for="problem">{{ _('Search problems') }}</label>
+            <div class="ui input">
+                <input id="search" type="text" name="search" value="{{ search_query or '' }}"
                        placeholder="{{ _('Search problems...') }}">
             </div>
             {% if has_fts %}
-                <div>
+                <div class="ui checkbox">
                     <input id="full_text" type="checkbox" name="full_text" value="1"
                            {% if full_text %}checked{% endif %}>
                     <label for="full_text">{{ _('Full text search') }}</label>
                 </div>
             {% endif %}
             {% if request.user.is_authenticated %}
-                <div>
+                <div class="ui checkbox">
                     <input id="hide_solved" type="checkbox" name="hide_solved" value="1"
                            {% if hide_solved %}checked{% endif %}>
                     <label for="hide_solved">{{ _('Hide solved problems') }}</label>
                 </div>
             {% endif %}
-            <div>
+            <div class="ui checkbox">
                 <input id="show_types" type="checkbox" name="show_types" value="1"
                         {% if show_types %} checked{% endif %}>
                 <label for="show_types">{{ _('Show problem types') }}</label>
             </div>
             <div class="filter-form-group">
                 <label for="category"><i>{{ _('Category') }}</i></label>
-                <select id="category" name="category">
+                <select id="category" name="category" class="ui fluid dropdown">
                     {% if category %}
                         <option value="" selected="selected">{{ _('All') }}</option>
                     {% else %}
@@ -55,17 +56,17 @@
                 </div>
             {% endif %}
             {% if point_values %}
-                <div class="ui form-label">{{ _('Point range') }}</div>
-                <div id="point-slider"></div>
+                <div class="form-label">{{ _('Point range') }}</div>
+                <div id="point-slider" class="ui slider"></div>
             {% endif %}
             <input id="point-start" type="hidden" name="point_start" {% if point_start and point_start != point_values.min %}value="{{ point_start }}"{% else %}disabled{% endif %}>
             <input id="point-end" type="hidden" name="point_end" {% if point_end and point_end != point_values.max %}value="{{ point_end }}"{% else %}disabled{% endif %}>
             <div class="form-submit-group">
                 <a id="go" >
-                    <button class="mini ui button">{{ _('Go') }}</button>
+                    <button class="ui mini blue button">{{ _('Go') }}</button>
                 </a>
                 <a id="random" >
-                    <button class="mini ui button">{{ _('Random') }}</button>
+                    <button class="ui mini blue button">{{ _('Random') }}</button>
                 </a>
             </div>
         </form>
